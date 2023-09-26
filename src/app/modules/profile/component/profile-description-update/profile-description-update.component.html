@@ -1,0 +1,17 @@
+<div class="d-flex justify-content-center mt-5 position-relative">
+  <p class="v-dialog-update-desc-close-btn" (click)="closeDialog()">X</p>
+  <form [formGroup]="form">
+    <div class="row">
+      <div class="col-12">
+        <mat-form-field class="w-100 mb-0" appearance="outline">
+          <mat-label>Descrizione</mat-label>
+          <input type="string" formControlName="description" [value]="form.get('description').value" matInput
+            style="color: var(--vinaya-cyan);">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center" mat-dialog-actions>
+      <button class="btn v-button-big" (click)="updateUser()">Update</button>
+    </div>
+  </form>
+</div>

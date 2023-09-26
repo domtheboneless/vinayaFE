@@ -1,0 +1,40 @@
+<div class="container-m-login" style="padding: 2em;">
+
+
+
+  <div class="d-flex justify-content-center mt-5">
+    <img src="../../../../assets/images/core/Asset_143x-linear-red.png" class="img-fluid justify-self-center mb-3"
+      alt="VINAYA logo" width="30%">
+  </div>
+  <div class="w-100">
+    <h2 class="text-center fw-bolder v-primary-red-text mb-3">Hello VINAYAN</h2>
+    <form [formGroup]="loginForm" class="mb-2 mt-3">
+
+      <div class="row">
+        <div class="col-12 mb-3">
+          <input formControlName="username"
+            [class.v-input-error]="loginForm.get('username').hasError('required') && loginForm.touched"
+            class="v-inupt mb-1 " type="text" placeholder="Insert your username" />
+          <small class="text-danger" *ngIf="loginForm.get('username').hasError('required') && loginForm?.touched"> *
+            Username required
+          </small>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 mb-3">
+          <input formControlName="password"
+            [class.v-input-error]="loginForm.get('password').hasError('required') && loginForm.touched"
+            class="v-inupt mb-1 " type="password" placeholder="Insert your password" />
+          <small class="text-danger" *ngIf="loginForm.get('password').hasError('required') && loginForm?.touched"> *
+            Password required
+          </small>
+        </div>
+      </div>
+      <div class="d-flex justify-content-center">
+        <button mat-button [class.v-button-disabled]="loginForm.invalid && loginForm.touched" class="v-button-big"
+          [disabled]="loginForm.invalid" (click)="sendForm(loginForm)">Login</button>
+      </div>
+
+    </form>
+  </div>
+</div>

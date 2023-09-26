@@ -1,0 +1,50 @@
+<div *ngIf="userProfile$ | async as userProfile" class="profile-container"
+  [ngStyle]="{ 'background-image': 'url(' + userProfile.profile?.imgProfile + ')' }">
+  <div class="mt-4">
+    <div class="d-flex w-100 justify-content-center position-relative">
+      <div class="col-8 ">
+        <!-- <img class="img-fluid v-img-profile " [src]="userProfile.profile?.imgProfile " alt="foto"> -->
+        <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)">
+        <div class="position-absolute v-icon-upload-position">
+          <i class="material-icons bottom-0 v-icon-upload" (click)="fileInput.click()">upload</i>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex flex-wrap mt-4 v-profile-info">
+      <div class="col-12 ">
+        <h1 class="v-profile-fullname text-center mb-0">{{userProfile.profile?.name + " "+ userProfile.profile?.lastname
+          }}
+        </h1>
+        <p class="text-center v-text-desc mt-0 mb-1" (click)="changeDescription()">
+          "{{userProfile.profile?.description}}"</p>
+      </div>
+      <div class="d-flex w-100 justify-content-center mt-2">
+        <div class="col-6">
+          <p class="text-center v-small v-border-right-light-gray v-text-gray">@{{userProfile.profile?.username}}</p>
+        </div>
+        <div class="col-6">
+          <p class="text-center v-small v-text-gray">{{userProfile.profile?.role | titlecase}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="restaurants$ | async as restaurants" class="v-risto-container">
+    <div class="d-flex flex-column justify-content-center">
+      <i class="material-icons text-center mb-2">local_restaurant</i>
+      <h1 class="text-center v-profile-restaurants-title">I miei ristoranti</h1>
+    </div>
+    <div class="v-container-carousel">
+      <div *ngFor="let restaurant of restaurants" (click)="goTo(restaurant)"
+        class="v-div-restaurant-carousel w-100 v-item-container-carousel d-flex col-12"
+        [ngStyle]="{ 'background-image': 'url(' + restaurant.profile.logoUrl + ')' }">
+        <p class="v-p-restaurant-carousel">{{restaurant.profile.name}}</p>
+        <i class="material-icons v-icon-item-carousel">keyboard_arrow_right</i>
+      </div>
+      <div class="v-div-restaurant-carousel w-100 v-item-container-carousel d-flex col-12"
+        style="background-image:url('https://endlessicons.com/wp-content/uploads/2012/12/add-icon-614x460.png')">
+        <p class="v-p-restaurant-carousel">Add new restaurant</p>
+      </div>
+    </div>
+  </div>
+</div>
