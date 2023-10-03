@@ -1,3 +1,72 @@
-<div class="v-custom-container">
+<div class="v-custom-container" *ngIf="restaurant$ | async as restaurant">
+  <div class="d-flex flex-wrap v-restaurant-header justify-content-center align-items-center"
+    [ngStyle]="{ 'background-image': 'url(' + restaurant.profile?.coverImg + ')' }">
+    <img class="v-restaurant-logourl" [src]="restaurant.profile.logoUrl" alt="">
+    <p class="w-100 text-white text-center v-title-after-img m-0 mt-3">{{restaurant.profile.name}}</p>
+    <span class=" v-desc-after-img">{{restaurant.profile.description}}</span>
+  </div>
+  <ng-container *ngIf="categories$ | async as categories">
+    <div class="d-flex flex-wrap v-restaurant-body pb-3">
+      <h2 class="w-100 px-3 pt-3 pb-0 mb-0">Le novità</h2>
+      <div class="v-container-carousel v-container-carousel-background mt-3 mb-3 ps-3 py-3">
+        <div *ngFor="let category of categories" class=" d-flex " (click)="openMatPanel(category.name)">
+          <div class="v-restaurant-item-novita"
+            [ngStyle]="{ 'background-image': 'url(' + category.items[category.items.length - 1].picture + ')' }">
+            <h2 class="v-restaurant-item-novita-badge">{{category.items[category.items.length - 1].name}}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <div class="d-flex flex-wrap v-white-background ">
+      <h2 class="w-100 px-3 pt-3 pb-0 mb-0 d-flex justify-content-between align-items-center">Sfoglia il menù
+        <span class="v-button-small" *ngIf="restaurantHolder">Aggiungi categoria</span>
+      </h2>
+      <mat-accordion class="mt-3 w-100" *ngFor="let category of categories">
+        <mat-expansion-panel [expanded]="categoryOpen == category.name" class="v-noshadow "
+          (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{category.name}}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="w-100 v-primary-background mt-3 mb-3 v-itemMenu" *ngFor="let itemMenu of category.items"
+            (click)="openItem(itemMenu._id)">
+            <div class="d-flex justify-content-between">
+              <div class="col-3">
+                <img class="v-item-menu-picture" [src]="itemMenu.picture" alt="" width="70">
+              </div>
+
+              <div class="col-6 align-self-center">
+                <p class="m-0">{{itemMenu.name}} </p>
+                <p class="m-0 fw-light v-font-small">{{itemMenu.desc | slice:0:20}} <span
+                    *ngIf="itemMenu.desc.length > 20">__</span></p>
+                <p class="m-0"></p>
+              </div>
+              <div class="col-3 align-self-center px-2">
+                <p class="m-0 text-center v-item-menu-price "> €{{itemMenu.price}}</p>
+              </div>
+            </div>
+          </div>
+          <div class="w-100 v-primary-background mt-3 mb-3 v-itemMenu" *ngIf="restaurantHolder">
+            <div class="d-flex justify-content-between">
+              <div class="col-3">
+                <img class="v-item-menu-picture"
+                  src="https://endlessicons.com/wp-content/uploads/2012/12/add-icon-614x460.png" alt="" width="70">
+              </div>
+
+              <div class="col-6 align-self-center">
+                <p class="m-0">Aggiungi nuovo prodotto </p>
+                <p class="m-0 fw-light v-font-small">Lorem ipsum dolor sit </p>
+                <p class="m-0"></p>
+              </div>
+              <div class="col-3 align-self-center px-2">
+                <p class="m-0 text-center v-item-menu-price " (click)="addNewProduct()"> Add</p>
+              </div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </ng-container>
 </div>

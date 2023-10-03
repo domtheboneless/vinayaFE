@@ -1,10 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
 :root {
   --vinaya-red: #f88d8b;
-  --vinaya-cyan: #16858d;
-  --vinaya-dark: #446deb;
-  --vinaya-black: #2f2c28;
-  --vinaya-gray: #a3afaf;
+  --vinaya-cyan: #f17300;
+  --vinaya-dark: #d64933;
+  --vinaya-black: #2b303a;
+  --vinaya-gray: #7c7c7c;
+  --vinaya-light-gray: #c8c8c8;
+  --vinaya-white: #fff7ef;
   --vinaya-green: #00d8d8;
   --vinaya-error: rgb(177, 0, 0);
 }
@@ -99,12 +100,19 @@ body {
   color: rgb(255, 255, 255) !important;
 }
 
+.v-light-gray-text {
+  color: var(--vinaya-light-gray);
+}
+
 .v-primary-background {
-  background-color: var(--vinaya-dark) !important;
+  background-color: var(--vinaya-cyan) !important;
 }
 
 .v-black-background {
   background-color: var(--vinaya-black) !important;
+}
+.v-white-background {
+  background-color: white;
 }
 .v-primary-background-linear-grad {
   background: linear-gradient(
@@ -121,8 +129,20 @@ body {
   font-size: 1.5rem;
 }
 
+.v-font-small {
+  font-size: small;
+}
+
 .v-shadow {
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.v-noshadow {
+  box-shadow: none !important;
+}
+
+.v-letter-space-2 {
+  letter-spacing: 2px;
 }
 /* SNACK BAR COLOR*/
 
@@ -148,6 +168,13 @@ body {
 
 /* ELEMENTS */
 
+.v-top-right-close {
+  top: 10px;
+  right: 10px;
+  background: white;
+  border-radius: 100px;
+  font-size: larger;
+}
 .v-button-big {
   background-color: var(--vinaya-cyan) !important;
   color: white !important;
@@ -160,6 +187,28 @@ body {
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
 }
 
+.v-button {
+  background-color: var(--vinaya-cyan) !important;
+  color: white !important;
+  /* width: 100%; */
+  box-shadow: black 1px solid;
+  font-family: "Roboto", sans-serif;
+  border-radius: 100px;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.v-button-small {
+  font-size: 0.7rem;
+  background: var(--vinaya-cyan);
+  padding: 0.3rem;
+  border-radius: 10px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .v-button-disabled {
   background-color: var(--vinaya-red) !important;
   color: gray !important;
@@ -187,7 +236,7 @@ body {
 
 .form-dialog-color {
   /* background: linear-gradient(45deg, #426ee7, #17858e, transparent); */
-  background-color: white;
+  background-color: var(--vinaya-white);
   border-radius: 50px 10px 50px 10px;
 }
 
@@ -202,6 +251,14 @@ body {
   border-color: rgb(79, 150, 147) !important;
 }
 
+.mat-expansion-indicator::after {
+  color: var(--vinaya-cyan) !important;
+}
+
+.mat-expansion-panel-body {
+  padding: 1rem !important;
+  padding-right: 0 !important;
+}
 .mat-mdc-dialog-container .mdc-dialog__surface {
   background-color: transparent !important;
 }
@@ -213,91 +270,7 @@ body {
 mat-label {
   color: rgb(79, 150, 147) !important;
 }
-/* CSS PROFILE PAGE */
 
-.profile-container {
-  padding-top: 11rem !important;
-  margin-top: 6rem;
-  background: linear-gradient(180deg, #ffffff, #eff9f9);
-  border-radius: 250px 0px 0px 0px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  box-shadow: 0px 0px 14px 15px rgba(0, 0, 0, 0.1);
-}
-
-.v-custom-container {
-  padding-top: 4rem !important;
-  min-height: calc(100vh - 56px);
-}
-
-.v-profile-info {
-  padding-top: 1em;
-  background: linear-gradient(0deg, #061421, #0098a90a);
-}
-.v-img-profile {
-  border-radius: 100px 0px !important;
-  width: 300px;
-  height: 200px;
-  object-fit: cover;
-  box-shadow: 0px 6px 5px #e4e4e4;
-}
-
-.v-profile-fullname {
-  font-size: clamp(1.8rem, 2vw, 2rem);
-  letter-spacing: -1px;
-  font-weight: 700;
-  color: white;
-}
-
-.v-text-desc {
-  font-size: smaller;
-  font-style: oblique;
-  color: var(--vinaya-gray) !important;
-}
-
-.v-icon-upload {
-  color: var(--vinaya-black);
-  right: 3px;
-  bottom: -55px;
-  background-color: white;
-  top: 163px;
-  border-radius: 5px;
-}
-
-.v-icon-upload-position {
-  bottom: -78px;
-  right: 40px;
-}
-
-.v-dialog-update-desc-close-btn {
-  position: absolute;
-  top: -41px;
-  right: 13px;
-  font-weight: 800;
-  color: var(--vinaya-cyan);
-}
-
-.v-small {
-  font-size: small;
-  color: var(--vinaya-black);
-}
-
-.v-border-right-light-gray {
-  border-right: 1px solid lightgray;
-  height: 23px;
-}
-
-.v-profile-restaurants-title {
-  font-size: large;
-  color: var(--vinaya-black);
-  margin-bottom: 0;
-}
-
-.v-risto-container {
-  /* background-color: var(--vinaya-red); */
-  background-color: white;
-  padding: 1em 0em;
-}
 /* CAROUSEL */
 
 .v-item-container-carousel {
@@ -314,7 +287,10 @@ mat-label {
   overflow-x: auto;
   margin: 20px 0px 20px 20px;
 }
-
+.v-container-carousel-background {
+  background-color: var(--vinaya-cyan);
+  border-radius: 100px 0px 0px 100px;
+}
 .v-div-restaurant-carousel {
   flex: 0 0 auto;
   width: auto;
@@ -435,4 +411,229 @@ mat-label {
     box-shadow: 30px 0 0 #fff;
     margin-top: 0;
   }
+}
+
+/* CSS PROFILE PAGE */
+
+.profile-container {
+  padding-top: 11rem !important;
+  margin-top: 6rem;
+  background: linear-gradient(180deg, #ffffff, #eff9f9);
+  border-radius: 250px 0px 0px 0px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  box-shadow: 0px 0px 14px 15px rgba(0, 0, 0, 0.1);
+}
+
+.v-custom-container {
+  padding-top: 3.9rem !important;
+  min-height: calc(100vh - 56px);
+}
+
+.v-profile-info {
+  padding-top: 1em;
+  background: linear-gradient(0deg, #061421, #0098a90a);
+}
+.v-img-profile {
+  border-radius: 100px 0px !important;
+  width: 300px;
+  height: 200px;
+  object-fit: cover;
+  box-shadow: 0px 6px 5px #e4e4e4;
+}
+
+.v-profile-fullname {
+  font-size: clamp(1.8rem, 2vw, 2rem);
+  letter-spacing: -1px;
+  font-weight: 700;
+  color: white;
+}
+
+.v-text-desc {
+  font-size: smaller;
+  font-style: oblique;
+  color: var(--vinaya-gray) !important;
+}
+
+.v-icon-upload {
+  color: var(--vinaya-black);
+  right: 3px;
+  bottom: -55px;
+  background-color: white;
+  top: 163px;
+  border-radius: 5px;
+}
+
+.v-icon-upload-position {
+  bottom: -78px;
+  right: 40px;
+}
+
+.v-dialog-update-desc-close-btn {
+  position: absolute;
+  top: -41px;
+  right: 13px;
+  font-weight: 800;
+  color: var(--vinaya-cyan);
+}
+
+.v-small {
+  font-size: small;
+  color: var(--vinaya-black);
+}
+
+.v-border-right-light-gray {
+  border-right: 1px solid lightgray;
+  height: 23px;
+}
+
+.v-profile-restaurants-title {
+  font-size: large;
+  color: var(--vinaya-black);
+  margin-bottom: 0;
+}
+
+.v-risto-container {
+  /* background-color: var(--vinaya-red); */
+  background-color: white;
+  padding: 1em 0em;
+}
+
+/* RESTAURANT PAGE */
+.v-restaurant-header {
+  height: 40vh;
+  width: 100% !important;
+  align-content: center;
+  position: relative; /* Aggiunge il posizionamento relativo per posizionare il gradiente sopra lo sfondo */
+  background-position: center;
+  background-size: cover;
+}
+.v-restaurant-header::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, #000000);
+  opacity: 0.6;
+  z-index: 1;
+}
+.v-restaurant-logourl {
+  height: 50% !important;
+  border-radius: 10px;
+  border: 2px solid var(--vinaya-black);
+  z-index: 2;
+}
+
+.v-title-after-img {
+  z-index: 2;
+}
+
+.v-desc-after-img {
+  z-index: 2;
+  color: #bbbbbb !important;
+  font-size: small;
+}
+
+.v-restaurant-body {
+  /* min-height: 41.6vh; */
+  background-color: var(--vinaya-white);
+}
+
+.v-restaurant-item-novita {
+  height: 150px !important;
+  width: 150px !important;
+  background: radial-gradient(var(--vinaya-red), var(--vinaya-cyan));
+  border-radius: 100%;
+  margin-right: 1rem;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative;
+  box-shadow: 5px 5px 10px var(--vinaya-dark);
+  border: 2px solid white;
+}
+
+.v-restaurant-item-novita-badge {
+  font-size: small;
+  /* background: linear-gradient(45deg, var(--vinaya-cyan), var(--vinaya-dark)); */
+  background-color: var(--vinaya-black);
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  position: absolute;
+  right: 0;
+  top: 10px;
+  padding: 0.2em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.v-small-card-item {
+  padding: 1rem;
+  border-radius: 10px;
+  color: white;
+}
+
+.v-itemMenu {
+  color: white;
+  border-radius: 100px 0 0px 100px;
+  padding: 0.3rem;
+  background: var(--vinaya-white);
+  padding-right: 0;
+}
+
+.v-item-menu-picture {
+  border-radius: 100%;
+}
+
+.v-item-menu-price {
+  background-color: white;
+  border-radius: 10px;
+  color: #f17300;
+}
+
+/*item detail category*/
+.v-item-img-dialog {
+  height: 60vh;
+  /* background-size: cover; */
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 100px 10px 0 0;
+  position: relative;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.v-item-img-dialog::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, #000000);
+  opacity: 0.6;
+  z-index: 1;
+  border-radius: 100px 10px 0 0;
+}
+
+.v-item-img-text {
+  z-index: 2;
+}
+
+.v-item-dialog-info {
+  /* height: 20vh; */
+  width: 100%;
+  z-index: 2;
+  background: linear-gradient(0deg, #00000080, transparent);
+}
+
+.v-item-qta-number {
+  background-color: white;
+  border-radius: 10px;
+  color: var(--vinaya-cyan);
+  text-align: center;
 }

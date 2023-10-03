@@ -20,7 +20,6 @@ export class AuthService {
 
   current;
   decode;
-  userActive;
   payLoad;
 
   constructor(private coreService: CoreService, private http: HttpClient) {

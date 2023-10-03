@@ -20,12 +20,10 @@ import { ProfileModule } from './modules/profile/profile.module';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgbModule,
     BrowserAnimationsModule,
     MaterialModule,
     RouterModule,
     HttpClientModule,
-    ProfileModule,
   ],
   providers: [AuthGuardService],
   bootstrap: [AppComponent],

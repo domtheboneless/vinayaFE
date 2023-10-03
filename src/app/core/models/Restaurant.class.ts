@@ -12,6 +12,7 @@ export interface Profile {
   city: string;
   description: string;
   logoUrl: string;
+  coverImg: string;
   email: string;
   cell: string;
   pIva: string;

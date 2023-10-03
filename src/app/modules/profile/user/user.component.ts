@@ -4,13 +4,14 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import jwt_decode from 'jwt-decode';
 import { CoreService } from 'src/app/core/services/core/core.service';
-import { Observable, switchMap, tap } from 'rxjs';
+import { Observable, of, switchMap, tap } from 'rxjs';
 import { RestaurantService } from '../../restaurant/service/restaurant.service';
 import { Restaurant } from 'src/app/core/models/Restaurant.class';
 import { User } from 'src/app/core/models/User.class';
 import { HomeComponent } from 'src/app/components/home/home/home.component';
 import { ProfileDescriptionUpdateComponent } from '../component/profile-description-update/profile-description-update.component';
 import { MatDialogConfig } from '@angular/material/dialog';
+import { CacheService } from 'src/app/core/services/cache/cache.service';
 
 @Component({
   selector: 'app-user',
@@ -33,7 +34,8 @@ export class UserComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthService,
     private core: CoreService,
-    private restaurantService: RestaurantService
+    private restaurantService: RestaurantService,
+    private cacheService: CacheService
   ) {}
 
   ngOnInit(): void {
@@ -46,28 +48,28 @@ export class UserComponent implements OnInit {
           this.decode = jwt_decode(user);
         }
 
-        if (
-          this.decode.payload.exp &&
-          this.decode.payload.exp < Date.now() / 1000
-        ) {
-          this.core.snackBar(
-            'Session expired: please login.',
-            'OK',
-            'v-snack-bar-bg-danger'
-          );
-        }
-
         if (this.decode.username == this.urlID) {
-          this.userProfile$ = this.userService
-            .getUserByUsername(this.decode.username)
-            .pipe(
-              tap((user: User) => {
-                this.userId = user._id;
-                this.restaurants$ = this.restaurantService.getRestaurantsList(
-                  user.restaurants
-                );
-              })
-            );
+          if (this.cacheService.get('userProfile')) {
+            this.userProfile$ = of(this.cacheService.get('userProfile'));
+            this.restaurants$ = of(this.cacheService.get('restaurantList'));
+            this.userProfile$.subscribe((user) => (this.userId = user._id));
+          } else {
+            this.userProfile$ = this.userService
+              .getUserByUsername(this.decode.username)
+              .pipe(
+                tap((user: User) => {
+                  this.userId = user._id;
+                  this.restaurants$ = this.restaurantService
+                    .getRestaurantsList(user.restaurants)
+                    .pipe(
+                      tap((rest: Restaurant[]) => {
+                        this.cacheService.set('restaurantList', rest);
+                      })
+                    );
+                  this.cacheService.set('userProfile', user);
+                })
+              );
+          }
         } else {
           this.authService.logout();
           this.core.goTo('home');

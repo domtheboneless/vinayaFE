@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { Router, UrlTree } from '@angular/router';
+import { NavigationExtras, Router, UrlTree } from '@angular/router';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import {
   MatSnackBar,
@@ -26,10 +26,6 @@ export class CoreService {
     {
       title: 'Profilo',
       routerLink: '/profile',
-    },
-    {
-      title: 'Ristoranti',
-      routerLink: '/restaurants',
     },
     {
       title: 'Ordini',

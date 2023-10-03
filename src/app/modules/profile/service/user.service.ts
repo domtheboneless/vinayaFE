@@ -62,7 +62,7 @@ export class UserService {
     // Aggiunta dell'intestazione alla richiesta HTTP
     const options = { headers };
     return this.http
-      .put(this.URL + '/updateImageProfile/' + userId, body, options)
+      .put(this.URL + 'updateImageProfile/' + userId, body, options)
       .pipe(
         finalize(() => {
           this.core.hideLoading();
