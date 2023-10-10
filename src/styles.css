@@ -8,6 +8,7 @@
   --vinaya-white: #fff7ef;
   --vinaya-green: #00d8d8;
   --vinaya-error: rgb(177, 0, 0);
+  --vinaya-edit-mode-color: #009ab5;
 }
 
 html,
@@ -41,6 +42,13 @@ body {
   padding-top: 3rem;
 }
 
+.v-mt-5 {
+  margin-top: 5rem !important;
+}
+
+.v-padding-area {
+  padding: 0 12px;
+}
 /*MENU STYLE*/
 .navbar-toggler-icon {
   background-image: url("./assets/images/core/Asset_63xWhite.png");
@@ -112,7 +120,11 @@ body {
   background-color: var(--vinaya-black) !important;
 }
 .v-white-background {
-  background-color: white;
+  background-color: rgb(255, 255, 255);
+}
+
+.v-white2-background {
+  background-color: var(--vinaya-white);
 }
 .v-primary-background-linear-grad {
   background: linear-gradient(
@@ -134,7 +146,7 @@ body {
 }
 
 .v-shadow {
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 }
 
 .v-noshadow {
@@ -161,13 +173,24 @@ body {
 
 .v-snack-bar-bg-success {
   --mdc-snackbar-container-color: rgb(255, 255, 255);
-  --mat-mdc-snack-bar-button-color: var(--vinaya-dark);
-  --mdc-snackbar-supporting-text-color: var(--vinaya-dark);
-  --mat-snack-bar-button-color: var(--vinaya-dark);
+  --mat-mdc-snack-bar-button-color: var(--vinaya-edit-mode-color);
+  --mdc-snackbar-supporting-text-color: var(--vinaya-edit-mode-color);
+  --mat-snack-bar-button-color: var(--vinaya-edit-mode-color);
 }
 
 /* ELEMENTS */
 
+.v-border-white-10px {
+  border: 10px solid white;
+}
+
+.v-border-50 {
+  border-radius: 50px !important;
+}
+
+.v-border-radius-100-0 {
+  border-radius: 30px 30px 0 0;
+}
 .v-top-right-close {
   top: 10px;
   right: 10px;
@@ -209,6 +232,31 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+.v-button-full-width {
+  font-size: 0.7rem;
+  width: 100%;
+  background: var(--vinaya-cyan) !important;
+  padding: 0.3rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.v-edit-background {
+  background-color: var(--vinaya-edit-mode-color) !important;
+}
+
+.v-edit-color {
+  color: var(--vinaya-edit-mode-color) !important;
+}
+
+.btn {
+  color: white !important;
+  border-radius: 0;
+}
+
 .v-button-disabled {
   background-color: var(--vinaya-red) !important;
   color: gray !important;
@@ -242,6 +290,26 @@ body {
 
 /*MATERIAL OVERRIDE*/
 
+.mat-mdc-text-field-wrapper {
+  padding: 0 !important;
+  width: 90% !important;
+  align-self: center !important;
+}
+.cdk-overlay-pane {
+  max-width: 100% !important;
+  width: auto !important;
+}
+.mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-line-ripple::after {
+  border-bottom-color: var(--vinaya-dark) !important;
+}
+
+.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: white !important;
+}
+.mat-mdc-form-field-focus-overlay {
+  background-color: white !important;
+}
+
 .mdc-text-field--outlined:not(.mdc-text-field--disabled)
   .mdc-notched-outline__leading,
 .mdc-text-field--outlined:not(.mdc-text-field--disabled)
@@ -268,7 +336,7 @@ body {
 }
 
 mat-label {
-  color: rgb(79, 150, 147) !important;
+  color: var(--vinaya-cyan) !important;
 }
 
 /* CAROUSEL */
@@ -577,24 +645,26 @@ mat-label {
 }
 
 .v-itemMenu {
-  color: white;
+  color: var(--vinaya-cyan);
   border-radius: 100px 0 0px 100px;
   padding: 0.3rem;
-  background: var(--vinaya-white);
+  background: white;
   padding-right: 0;
+  box-shadow: -5px 0px 6px 3px #fbfbfbe8;
 }
 
 .v-item-menu-picture {
   border-radius: 100%;
+  border: 2px solid var(--vinaya-cyan);
 }
 
 .v-item-menu-price {
-  background-color: white;
+  background-color: var(--vinaya-cyan);
   border-radius: 10px;
-  color: #f17300;
+  color: white;
 }
 
-/*item detail category*/
+/* ITEM DETAIL PAGE*/
 .v-item-img-dialog {
   height: 60vh;
   /* background-size: cover; */
@@ -636,4 +706,86 @@ mat-label {
   border-radius: 10px;
   color: var(--vinaya-cyan);
   text-align: center;
+}
+
+/* ITEM EDIT PAGE*/
+.v-radius-100 {
+  border-radius: 100%;
+}
+
+.v-img {
+  position: relative;
+}
+.v-img::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  z-index: 1; /* Per garantire che il gradiente sia sopra l'immagine */
+}
+
+.image-container {
+  position: relative;
+  display: contents;
+}
+
+.img-fluid.v-img {
+  border-radius: 100%;
+}
+
+.gradient-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  padding-bottom: 1rem;
+  color: white;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(0deg, black, transparent, transparent);
+  border-radius: 100%; /* Applica border-radius al gradiente */
+  z-index: 1; /* Assicura che il gradiente sia sopra l'immagine */
+}
+.gradient-overlay > span {
+  color: var(--vinaya-white);
+}
+
+.custom-checkbox {
+  width: 20px;
+  height: 20px;
+  appearance: none;
+  background-color: var(--vinaya-cyan);
+  border: 2px solid var(--vinaya-cyan);
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  margin-right: 0.5rem;
+}
+
+/* Pseudo-elemento ::before per il segno di spunta */
+.custom-checkbox::before {
+  content: url("../src/assets/images/core/checkBox.png"); /* Carattere Unicode per il segno di spunta */
+  height: 20px; /* Altezza dell'immagine */
+  color: white; /* Cambia il colore del segno di spunta */
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0; /* Inizialmente nascosto */
+}
+
+/* Stile personalizzato per la casella di controllo selezionata */
+.custom-checkbox:checked::before {
+  opacity: 1; /* Rendilo visibile quando selezionato */
 }

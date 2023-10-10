@@ -72,7 +72,7 @@ export class CoreService {
 
   snackBar(message: string, button: string, color: string) {
     this._snackBar.open(message, button, {
-      duration: 5000,
+      duration: 2000,
       panelClass: color,
     });
   }

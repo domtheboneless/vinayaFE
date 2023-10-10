@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, finalize } from 'rxjs';
 import { Category, Items } from 'src/app/core/models/Category.class';
@@ -11,9 +11,30 @@ import { environment } from 'src/environments/environment.development';
 export class CategoryService {
   private serverURL = environment.serverUrl + 'category/';
 
-  private categoryHolder = new BehaviorSubject<string>('');
-
   constructor(private http: HttpClient, private core: CoreService) {}
+
+  createCategory(category): Observable<Category> {
+    this.core.showLoading();
+    const bearer = localStorage.getItem('currentUser').replaceAll('"', '');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${bearer}`,
+    });
+    const options = { headers };
+
+    const body = new FormData();
+    body.append('name', category.name);
+    body.append('active', category.active);
+    body.append('restaurantId', category.restaurantId);
+    body.append('items', category.items);
+
+    return this.http
+      .post<Category>(this.serverURL + 'createCategory', body)
+      .pipe(
+        finalize(() => {
+          this.core.hideLoading();
+        })
+      );
+  }
 
   getCategoryByRestaurantId(id: string): Observable<Category> {
     return this.http.get<Category>(this.serverURL + 'restaurant/' + id);
@@ -26,11 +47,60 @@ export class CategoryService {
       .pipe(finalize(() => this.core.hideLoading()));
   }
 
-  getCategoryHolder() {
-    return this.categoryHolder.asObservable();
+  uploadImgItem(idCategory, idItem, file) {
+    this.core.showLoading();
+    const bearer = localStorage.getItem('currentUser').replaceAll('"', '');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${bearer}`,
+    });
+    const options = { headers };
+
+    const body = new FormData();
+    body.append('file', file.target.files[0]);
+    body.append('bucket', 'vinaya-menu-items-image');
+    body.append('idItem', idItem);
+
+    return this.http
+      .put(this.serverURL + 'uploadImageItem/' + idCategory, body, options)
+      .pipe(
+        finalize(() => {
+          this.core.hideLoading();
+        })
+      );
   }
 
-  setCategoryHolder(holder: string) {
-    this.categoryHolder.next(holder);
+  updateItem(itemForm, idCategory): Observable<Items> {
+    this.core.showLoading();
+    const bearer = localStorage.getItem('currentUser').replaceAll('"', '');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${bearer}`,
+    });
+    const options = { headers };
+    const body = new FormData();
+    body.append('name', itemForm.name);
+    body.append('desc', itemForm.desc);
+    body.append('picture', itemForm.picture);
+    body.append('price', itemForm.price);
+    body.append('rate', itemForm.rate);
+    body.append('inStock', itemForm.inStock);
+    body.append('_id', itemForm._id);
+
+    const jsonObject = {};
+    body.forEach((value, key) => {
+      jsonObject[key] = value;
+    });
+    console.log(jsonObject);
+
+    return this.http
+      .put<Items>(
+        this.serverURL + 'editItemFromCategory/' + idCategory,
+        jsonObject,
+        options
+      )
+      .pipe(
+        finalize(() => {
+          this.core.hideLoading();
+        })
+      );
   }
 }

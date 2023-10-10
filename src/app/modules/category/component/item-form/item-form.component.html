@@ -1,0 +1,32 @@
+<div class="d-flex w-100 justify-content-center">
+  <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
+    <mat-form-field class="w-100">
+      <mat-label>Nome del prodotto</mat-label>
+      <input matInput placeholder="Name" formControlName="name">
+      <mat-error *ngIf="itemForm.get('name').hasError('required')">Name is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Descrizione del prodotto</mat-label>
+      <input matInput placeholder="Description" formControlName="desc">
+      <mat-error *ngIf="itemForm.get('desc').hasError('required')">Description is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Prezzo</mat-label>
+      <input matInput type="number" placeholder="Price" formControlName="price">
+      <mat-error *ngIf="itemForm.get('price').hasError('required')">Price is required</mat-error>
+    </mat-form-field>
+
+    <div class="d-flex align-items-center mb-5" style="    padding-left: 1rem;">
+
+      <p class="m-0 mr-2" style="margin-right: 1rem !important;">Disponibile </p> <input class="custom-checkbox"
+        type="checkbox" formControlName="inStock">
+    </div>
+
+
+    <div class="d-flex justify-content-center">
+      <button class="btn v-button v-border-50" type="submit">Submit</button>
+    </div>
+  </form>
+</div>

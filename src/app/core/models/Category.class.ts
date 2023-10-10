@@ -9,6 +9,7 @@ export interface Category {
 export interface Items {
   id: string;
   name: string;
+  username: string;
   desc: string;
   picture: string;
   price: number;
