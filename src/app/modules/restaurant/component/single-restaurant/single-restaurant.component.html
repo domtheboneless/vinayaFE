@@ -39,7 +39,9 @@
             (click)="openItem(itemMenu._id, category)">
             <div class="d-flex justify-content-between">
               <div class="col-3">
-                <img class="v-item-menu-picture" [src]="itemMenu.picture" alt="" width="70">
+                <img class="v-item-menu-picture" *ngIf="itemMenu.picture" [src]="itemMenu.picture " alt="" width="70">
+                <img class="v-item-menu-picture" *ngIf="!itemMenu.picture"
+                  src="../../../../../assets/images/core/nopictureitem.png" alt="" width="70">
               </div>
 
               <div class="col-6 align-self-center">

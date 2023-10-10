@@ -3,8 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 import { Items } from 'src/app/core/models/Category.class';
 import { CategoryService } from '../../service/category.service';
-import { MatDialogRef } from '@angular/material/dialog';
-import { ItemEditComponent } from '../item-edit/item-edit.component';
 
 @Component({
   selector: 'app-item-form',
@@ -15,6 +13,7 @@ export class ItemFormComponent implements OnInit {
   @Input() item: Items;
   @Input() idCategory: string;
   @Output() formSubmitted: EventEmitter<any> = new EventEmitter<any>();
+  @Output() onSubmitSuccess: EventEmitter<any> = new EventEmitter<any>();
   itemForm: FormGroup;
 
   constructor(
@@ -54,7 +53,7 @@ export class ItemFormComponent implements OnInit {
         .updateItem(this.itemForm.value, this.idCategory)
         .subscribe({
           next: (val) => {
-            console.log(val);
+            this.onSubmitSuccess.emit(true);
           },
           error: (err) => {
             console.log(err);

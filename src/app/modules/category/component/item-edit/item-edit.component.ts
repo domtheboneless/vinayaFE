@@ -89,4 +89,12 @@ export class ItemEditComponent implements OnInit {
   handleFormSubmit(formData: any) {
     this.itemPreview = formData;
   }
+
+  handleOnSuccess(bool) {
+    if (bool) {
+      this.edit = true;
+      this.close();
+    }
+  }
 }
+//

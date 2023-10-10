@@ -5,7 +5,7 @@ import { CategoryRoutingModule } from './category-routing.module';
 import { ItemEditComponent } from './component/item-edit/item-edit.component';
 import { MaterialModule } from 'src/app/core/modules/material.module';
 import { ItemFormComponent } from './component/item-form/item-form.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CreateCategoryComponent } from './component/create-category/create-category.component';
 
 @NgModule({

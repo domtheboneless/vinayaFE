@@ -1,9 +1,10 @@
 <ng-container *ngIf="item$ | async as item">
-  <div class="CAZZO v-white-background pt-3 v-border-radius-100-0 position-relative"
-    style="margin-top: 10rem; height: 100vh;">
+  <div class="v-white-background pt-3 v-border-radius-100-0 position-relative" style="margin-top: 8rem; height: 70vh;">
     <div class="d-flex justify-content-center position-absolute" style="top: -90px;">
       <div class="image-container ">
-        <img class="img-fluid v-img v-border-white-10px" [src]="item.picture" width="50%">
+        <img class="img-fluid v-img v-border-white-10px" *ngIf="item.picture" [src]="item.picture" width="50%">
+        <img class="img-fluid v-img v-border-white-10px" *ngIf="!item.picture"
+          src="../../../../../assets/images/core/nopictureitem.png" alt="" width="50%">
         <div class="gradient-overlay v-border-white-10px">
           <input type="file" #fileInput style="display: none;" (change)="uploadImgItem($event)">
           <div class="d-flex" (click)="fileInput.click()">
@@ -23,8 +24,8 @@
       </div>
     </div>
     <div class="v-padding-area v-mt-5">
-      <app-item-form [item]="item" (formSubmitted)="handleFormSubmit($event)"></app-item-form>
+      <app-item-form [item]="item" [idCategory]="idCategory" (formSubmitted)="handleFormSubmit($event)"
+        (onSubmitSuccess)="handleOnSuccess($event)"></app-item-form>
     </div>
   </div>
-
 </ng-container>
