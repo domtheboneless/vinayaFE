@@ -10,11 +10,8 @@ import { MaterialModule } from './core/modules/material.module';
 import { FooterComponent } from './components/footer/footer.component';
 import { RouterModule } from '@angular/router';
 import { HomeComponent } from './components/home/home/home.component';
-import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthGuardService } from './core/guards/auth-guard.service';
-import { ProfileModule } from './modules/profile/profile.module';
-import { ItemEditComponent } from './modules/category/component/item-edit/item-edit.component';
 
 @NgModule({
   declarations: [AppComponent, MenuComponent, FooterComponent, HomeComponent],

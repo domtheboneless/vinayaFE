@@ -20,8 +20,19 @@
 
     <div class="d-flex align-items-center mb-5" style="    padding-left: 1rem;">
 
-      <p class="m-0 mr-2" style="margin-right: 1rem !important;">Disponibile </p> <input class="custom-checkbox"
-        type="checkbox" formControlName="inStock">
+      <div class="col-6 d-flex align-self-end">
+        <p class="m-0 mr-2" style="margin-right: 1rem !important;">Disponibile </p>
+        <label class="switch align-self-center">
+          <input type="checkbox" formControlName="inStock">
+          <span class="slider round"></span>
+        </label>
+        <!-- <input class="custom-checkbox" type="checkbox" formControlName="inStock"> -->
+      </div>
+
+
+      <div class="col-6 d-flex justify-content-end">
+        <button class="v-button-outline-small mx-3" type="button" (click)="removeItem()">Elimina articolo</button>
+      </div>
     </div>
 
 

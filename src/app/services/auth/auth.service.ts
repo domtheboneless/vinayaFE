@@ -18,9 +18,9 @@ export class AuthService {
   private currentUserInfo = new BehaviorSubject<any>(null);
   public currentUserInfo$ = this.currentUserInfo.asObservable();
 
-  current;
-  decode;
-  payLoad;
+  private current;
+  private decode;
+  private payLoad;
 
   constructor(private coreService: CoreService, private http: HttpClient) {
     this.currentUserSubject = new BehaviorSubject<any>(

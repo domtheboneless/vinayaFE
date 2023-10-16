@@ -6,55 +6,92 @@
     <span class=" v-desc-after-img">{{restaurant.profile.description}}</span>
   </div>
   <div class="d-flex w-100 justify-content-center ">
-    <button class="btn w-100 v-button-full-width v-edit-background" *ngIf="restaurantHolder"
-      (click)="editModeToggle()">Edit mode</button>
+    <button class="btn w-100 v-button-full-width v-edit-background" *ngIf="restaurantHolder" (click)="editModeToggle()"
+      style="border-radius: 0 !important;">Edit mode</button>
   </div>
   <ng-container *ngIf="categories$ | async as categories">
     <div class="d-flex flex-wrap v-restaurant-body pb-3">
       <h2 class="w-100 px-3 pt-3 pb-0 mb-0">Le novità</h2>
       <div class="v-container-carousel v-container-carousel-background mt-3 mb-3 ps-3 py-3">
-        <div *ngFor="let category of categories" class=" d-flex " (click)="openMatPanel(category.name)">
-          <div class="v-restaurant-item-novita"
+        <div *ngFor="let category of categories" class=" d-flex "
+          (click)="openItem(category.items[category.items.length - 1]._id, category)">
+          <div class="v-restaurant-item-novita" *ngIf="category.active"
             [ngStyle]="{ 'background-image': 'url(' + category.items[category.items.length - 1].picture + ')' }">
             <h2 class="v-restaurant-item-novita-badge">{{category.items[category.items.length - 1].name}}</h2>
           </div>
         </div>
       </div>
+      <div
+        class="v-container-carousel v-container-carousel-background mt-3 mb-3 ps-3 py-3 w-100 v-container-carousel-rest-category-fixed"
+        [ngClass]="{'fixed-top': isElementFixed, 'd-none': !isElementFixed}">
+        <div *ngFor="let category of categories" class=" d-flex " (click)="openMatPanel(category.name)">
+          <div *ngIf="category.active" class="v-restaurant-item-category">
+            <h2 class="v-restaurant-category-fixed-top">{{category.name}}</h2>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="d-flex flex-wrap v-white-background ">
+    <div class="d-flex flex-wrap v-white-background pb-3">
       <h2 class="w-100 px-3 pt-3 pb-0 mb-0 d-flex justify-content-between align-items-center">Sfoglia il menù
         <span class="v-button-small v-edit-background" *ngIf="editMode" (click)="createCategory()">Aggiungi
           categoria</span>
       </h2>
       <mat-accordion class="mt-3 w-100" *ngFor="let category of categories">
-        <mat-expansion-panel [expanded]="categoryOpen == category.name" class="v-noshadow "
+        <app-category-expansion-panel [category]="category" [editMode]="editMode" [restaurantHolder]="restaurantHolder"
+          (openItemEmitter)="openItemHandler($event)"></app-category-expansion-panel>
+        <!-- <mat-expansion-panel *ngIf="category.active" [expanded]="categoryOpen == category.name" class="v-noshadow "
           (opened)="panelOpenState = true" (closed)="panelOpenState = false">
           <mat-expansion-panel-header>
             <mat-panel-title>
-              {{category.name}}
+              {{category.name | capitalize}}
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <div class="w-100 mt-3 mb-3 v-itemMenu" *ngFor="let itemMenu of category.items"
-            (click)="openItem(itemMenu._id, category)">
-            <div class="d-flex justify-content-between">
-              <div class="col-3">
-                <img class="v-item-menu-picture" *ngIf="itemMenu.picture" [src]="itemMenu.picture " alt="" width="70">
-                <img class="v-item-menu-picture" *ngIf="!itemMenu.picture"
-                  src="../../../../../assets/images/core/nopictureitem.png" alt="" width="70">
-              </div>
+          <ng-container *ngFor="let itemMenu of category.items">
+            <div class="w-100 mt-3 mb-3 v-itemMenu" *ngIf="itemMenu.inStock" (click)="openItem(itemMenu._id, category)">
+              <div class="d-flex justify-content-between">
+                <div class="col-3">
+                  <img class="v-item-menu-picture" *ngIf="itemMenu.picture" [src]="itemMenu.picture " alt="" width="70">
+                  <img class="v-item-menu-picture" *ngIf="!itemMenu.picture"
+                    src="../../../../../assets/images/core/nopictureitem.png" alt="" width="70">
+                </div>
 
-              <div class="col-6 align-self-center">
-                <p class="m-0">{{itemMenu.name}} </p>
-                <p class="m-0 fw-light v-font-small">{{itemMenu.desc | slice:0:20}} <span
-                    *ngIf="itemMenu.desc.length > 20">__</span></p>
-                <p class="m-0"></p>
-              </div>
-              <div class="col-3 align-self-center px-2">
-                <p class="m-0 text-center v-item-menu-price "> €{{itemMenu.price}}</p>
+                <div class="col-6 align-self-center">
+                  <p class="m-0">{{itemMenu.name | capitalize}} </p>
+                  <p class="m-0 fw-light v-font-small">{{itemMenu.desc | slice:0:20 }}<span
+                      *ngIf="itemMenu.desc.length > 20">...</span></p>
+                  <p class="m-0"></p>
+                </div>
+                <div class="col-3 align-self-center px-2">
+                  <p class="m-0 text-center v-item-menu-price "> €{{itemMenu.price}}</p>
+                </div>
               </div>
             </div>
-          </div>
+
+            <div class="w-100 mt-3 mb-3 v-itemMenu" *ngIf="!itemMenu.inStock && restaurantHolder"
+              style="background-color: lightgray;" (click)="openItem(itemMenu._id, category)">
+              <div class="d-flex justify-content-between">
+                <div class="col-3">
+                  <img class="v-item-menu-picture v-not-available" *ngIf="itemMenu.picture" [src]="itemMenu.picture "
+                    alt="" width="70">
+                  <img class="v-item-menu-picture" *ngIf="!itemMenu.picture"
+                    src="../../../../../assets/images/core/nopictureitem.png" alt="" width="70">
+                </div>
+
+                <div class="col-6 align-self-center">
+                  <small class="not-available-label">Non disponibile</small>
+                  <p class="m-0 v-not-available">{{itemMenu.name}} </p>
+                  <p class="m-0 fw-light v-font-small v-not-available">{{itemMenu.desc | slice:0:20}}<span
+                      *ngIf="itemMenu.desc.length > 20">...</span></p>
+                  <p class="m-0"></p>
+                </div>
+                <div class="col-3 align-self-center px-2">
+                  <p class="m-0 text-center v-item-menu-price v-not-available"> €{{itemMenu.price}}</p>
+                </div>
+              </div>
+
+            </div>
+          </ng-container>
           <div class="w-100 mt-3 mb-3 v-itemMenu " *ngIf="editMode">
             <div class="d-flex justify-content-between">
               <div class="col-3">
@@ -72,7 +109,85 @@
               </div>
             </div>
           </div>
-        </mat-expansion-panel>
+        </mat-expansion-panel> -->
+
+        <!-- <ng-container *ngIf="editMode && !category.active">
+          <span class="w-100 px-3 pt-3 pb-0 mb-0 d-flex justify-content-between align-items-center"
+            style="border-top: 1px solid #0000001f;">Categorie non attive
+          </span>
+          <mat-expansion-panel *ngIf="!category.active" [expanded]="categoryOpen == category.name" class="v-noshadow "
+            (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{category.name | capitalize}}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ng-container *ngFor="let itemMenu of category.items">
+              <div class="w-100 mt-3 mb-3 v-itemMenu" *ngIf="itemMenu.inStock"
+                (click)="openItem(itemMenu._id, category)">
+                <div class="d-flex justify-content-between">
+                  <div class="col-3">
+                    <img class="v-item-menu-picture" *ngIf="itemMenu.picture" [src]="itemMenu.picture " alt=""
+                      width="70">
+                    <img class="v-item-menu-picture" *ngIf="!itemMenu.picture"
+                      src="../../../../../assets/images/core/nopictureitem.png" alt="" width="70">
+                  </div>
+
+                  <div class="col-6 align-self-center">
+                    <p class="m-0">{{itemMenu.name | capitalize}} </p>
+                    <p class="m-0 fw-light v-font-small">{{itemMenu.desc | slice:0:20 }}<span
+                        *ngIf="itemMenu.desc.length > 20">...</span></p>
+                    <p class="m-0"></p>
+                  </div>
+                  <div class="col-3 align-self-center px-2">
+                    <p class="m-0 text-center v-item-menu-price "> €{{itemMenu.price}}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="w-100 mt-3 mb-3 v-itemMenu" *ngIf="!itemMenu.inStock && restaurantHolder"
+                style="background-color: lightgray;" (click)="openItem(itemMenu._id, category)">
+                <div class="d-flex justify-content-between">
+                  <div class="col-3">
+                    <img class="v-item-menu-picture v-not-available" *ngIf="itemMenu.picture" [src]="itemMenu.picture "
+                      alt="" width="70">
+                    <img class="v-item-menu-picture" *ngIf="!itemMenu.picture"
+                      src="../../../../../assets/images/core/nopictureitem.png" alt="" width="70">
+                  </div>
+
+                  <div class="col-6 align-self-center">
+                    <small class="not-available-label">Non disponibile</small>
+                    <p class="m-0 v-not-available">{{itemMenu.name}} </p>
+                    <p class="m-0 fw-light v-font-small v-not-available">{{itemMenu.desc | slice:0:20}}<span
+                        *ngIf="itemMenu.desc.length > 20">...</span></p>
+                    <p class="m-0"></p>
+                  </div>
+                  <div class="col-3 align-self-center px-2">
+                    <p class="m-0 text-center v-item-menu-price v-not-available"> €{{itemMenu.price}}</p>
+                  </div>
+                </div>
+
+              </div>
+            </ng-container>
+            <div class="w-100 mt-3 mb-3 v-itemMenu " *ngIf="editMode">
+              <div class="d-flex justify-content-between">
+                <div class="col-3">
+                  <img class="v-item-menu-picture" style="border : none !important;"
+                    src="https://endlessicons.com/wp-content/uploads/2012/12/add-icon-614x460.png" alt="" width="70">
+                </div>
+
+                <div class="col-6 align-self-center">
+                  <p class="m-0 v-edit-color">Aggiungi nuovo prodotto </p>
+                  <p class="m-0 fw-light v-font-small v-edit-color">Lorem ipsum dolor sit </p>
+                  <p class="m-0"></p>
+                </div>
+                <div class="col-3 align-self-center px-2 ">
+                  <p class="m-0 text-center v-item-menu-price v-edit-background" (click)="addNewProduct()"> Add</p>
+                </div>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </ng-container> -->
       </mat-accordion>
     </div>
   </ng-container>

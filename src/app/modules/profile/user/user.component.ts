@@ -84,9 +84,13 @@ export class UserComponent implements OnInit {
       .pipe(
         switchMap(
           () =>
-            (this.userProfile$ = this.userService.getUserByUsername(
-              this.decode.username
-            ))
+            (this.userProfile$ = this.userService
+              .getUserByUsername(this.decode.username)
+              .pipe(
+                tap((user) => {
+                  this.cacheService.set('userProfile', user);
+                })
+              ))
         )
       )
       .subscribe(

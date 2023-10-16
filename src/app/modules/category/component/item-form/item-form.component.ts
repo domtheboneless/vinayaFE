@@ -48,6 +48,8 @@ export class ItemFormComponent implements OnInit {
   }
 
   onSubmit() {
+    console.log('submit');
+
     if (this.itemForm.valid) {
       this.categoryService
         .updateItem(this.itemForm.value, this.idCategory)
@@ -60,5 +62,9 @@ export class ItemFormComponent implements OnInit {
           },
         });
     }
+  }
+
+  removeItem() {
+    console.log(this.item);
   }
 }

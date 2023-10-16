@@ -27,8 +27,10 @@ export class CategoryService {
     body.append('restaurantId', category.restaurantId);
     body.append('items', category.items);
 
+    console.log(body);
+
     return this.http
-      .post<Category>(this.serverURL + 'createCategory', body)
+      .post<Category>(this.serverURL + 'createCategory', category, options)
       .pipe(
         finalize(() => {
           this.core.hideLoading();

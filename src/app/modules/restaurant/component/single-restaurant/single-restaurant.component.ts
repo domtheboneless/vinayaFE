@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnInit, ViewContainerRef } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewContainerRef,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RestaurantService } from '../../service/restaurant.service';
 import { Restaurant } from 'src/app/core/models/Restaurant.class';
@@ -19,7 +25,9 @@ import { CreateCategoryComponent } from 'src/app/modules/category/component/crea
   styleUrls: ['./single-restaurant.component.css'],
 })
 export class SingleRestaurantComponent implements OnInit {
-  id;
+  isElementFixed = false;
+
+  routeRestaurantId;
   restaurant$: Observable<Restaurant>;
   categories$: Observable<Category>;
   categoryOpen;
@@ -37,34 +45,47 @@ export class SingleRestaurantComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.id = this.activeRoute.snapshot.params['id'];
-    this.restaurant$ = this.restaurantService.getRestaurantById(this.id).pipe(
-      tap((restaurant) => {
-        this.subscription = this.authService.currentUserInfo$.subscribe(
-          (currentUser) => {
-            if (
-              currentUser &&
-              restaurant.profile.username == currentUser['cognito:username']
-            ) {
-              this.restaurantHolder = true;
+    this.routeRestaurantId = this.activeRoute.snapshot.params['id'];
+    this.restaurant$ = this.restaurantService
+      .getRestaurantById(this.routeRestaurantId)
+      .pipe(
+        tap((restaurant) => {
+          this.subscription = this.authService.currentUserInfo$.subscribe(
+            (currentUser) => {
+              if (
+                currentUser &&
+                restaurant.profile.username == currentUser['cognito:username']
+              ) {
+                this.restaurantHolder = true;
+              }
             }
-          }
-        );
-        this.categories$ = this.categoryService.getCategoryByRestaurantId(
-          this.id
-        );
-      })
-    );
+          );
+          this.categories$ = this.categoryService.getCategoryByRestaurantId(
+            this.routeRestaurantId
+          );
+        })
+      );
   }
 
   openMatPanel(categoryName: string) {
     this.categoryOpen = categoryName;
     const categoryElement = findElementByText(this.elementRef, categoryName);
+    console.log(categoryElement);
+
     if (categoryElement) {
       categoryElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 
+  @HostListener('window:scroll', ['$event'])
+  onScroll() {
+    const scrollPosition = window.pageYOffset;
+    this.isElementFixed = scrollPosition > 500;
+  }
+
+  openItemHandler(event) {
+    this.openItem(event.item, event.category);
+  }
   openItem(item, category) {
     const dialogConfig: MatDialogConfig = {
       data: {
@@ -86,7 +107,7 @@ export class SingleRestaurantComponent implements OnInit {
     dialog.afterClosed().subscribe((result) => {
       if (result.edit) {
         this.categories$ = this.categoryService.getCategoryByRestaurantId(
-          this.id
+          this.routeRestaurantId
         );
       }
     });
@@ -110,7 +131,7 @@ export class SingleRestaurantComponent implements OnInit {
   createCategory() {
     const dialogConfig: MatDialogConfig = {
       data: {
-        idRestaurant: this.id,
+        idRestaurant: this.routeRestaurantId,
       },
       width: '300px',
     };
