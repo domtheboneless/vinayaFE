@@ -3,12 +3,13 @@ import {
   ElementRef,
   HostListener,
   OnInit,
+  Renderer2,
   ViewContainerRef,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RestaurantService } from '../../service/restaurant.service';
 import { Restaurant } from 'src/app/core/models/Restaurant.class';
-import { Observable, switchMap, tap } from 'rxjs';
+import { Observable, forkJoin, map, of, switchMap, tap } from 'rxjs';
 import { CategoryService } from 'src/app/modules/category/service/category.service';
 import { Category } from 'src/app/core/models/Category.class';
 import { findElementByText } from 'src/app/core/utils/dom-utils';
@@ -18,6 +19,7 @@ import { MatDialogConfig } from '@angular/material/dialog';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { ItemEditComponent } from 'src/app/modules/category/component/item-edit/item-edit.component';
 import { CreateCategoryComponent } from 'src/app/modules/category/component/create-category/create-category.component';
+import { CacheService } from 'src/app/core/services/cache/cache.service';
 
 @Component({
   selector: 'app-single-restaurant',
@@ -29,7 +31,7 @@ export class SingleRestaurantComponent implements OnInit {
 
   routeRestaurantId;
   restaurant$: Observable<Restaurant>;
-  categories$: Observable<Category>;
+  categories$: Observable<Category[]>;
   categoryOpen;
   restaurantHolder = false;
   subscription;
@@ -39,9 +41,10 @@ export class SingleRestaurantComponent implements OnInit {
     private activeRoute: ActivatedRoute,
     private restaurantService: RestaurantService,
     private categoryService: CategoryService,
-    private elementRef: ElementRef,
     private coreService: CoreService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cacheService: CacheService,
+    private viewContainerRef: ViewContainerRef
   ) {}
 
   ngOnInit() {
@@ -60,20 +63,26 @@ export class SingleRestaurantComponent implements OnInit {
               }
             }
           );
-          this.categories$ = this.categoryService.getCategoryByRestaurantId(
-            this.routeRestaurantId
-          );
+
+          const categoryObservables = restaurant.menu.map((category) => {
+            return this.categoryService.getCategoryById(category);
+          });
+          forkJoin(categoryObservables).subscribe((categories) => {
+            this.categories$ = of(categories);
+          });
         })
       );
   }
 
-  openMatPanel(categoryName: string) {
+  scrollToElement(categoryName: string) {
     this.categoryOpen = categoryName;
-    const categoryElement = findElementByText(this.elementRef, categoryName);
-    console.log(categoryElement);
+    const selector = '#' + categoryName;
+    const element =
+      this.viewContainerRef.element.nativeElement.querySelector(selector);
 
-    if (categoryElement) {
-      categoryElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (element) {
+      const yOffset = element.getBoundingClientRect().top;
+      window.scrollTo({ top: window.scrollY + yOffset, behavior: 'smooth' });
     }
   }
 
@@ -103,12 +112,24 @@ export class SingleRestaurantComponent implements OnInit {
       dialog = this.coreService.openDialog(ItemDetailComponent, dialogConfig);
     }
 
-    //
     dialog.afterClosed().subscribe((result) => {
       if (result.edit) {
-        this.categories$ = this.categoryService.getCategoryByRestaurantId(
-          this.routeRestaurantId
-        );
+        const categoryId = result.idCategory;
+
+        this.categoryService
+          .getCategoryById(categoryId)
+          .subscribe((updatedCategory) => {
+            this.categories$.subscribe((categories) => {
+              const updatedCategories = categories.map((category) => {
+                if (category._id === categoryId) {
+                  return updatedCategory;
+                } else {
+                  return category;
+                }
+              });
+              this.categories$ = of(updatedCategories);
+            });
+          });
       }
     });
   }
@@ -121,17 +142,12 @@ export class SingleRestaurantComponent implements OnInit {
     } else {
       onOff = ' disattiva';
     }
-    this.coreService.snackBar(
-      'Modalità modifica' + onOff,
-      'OK',
-      'v-snack-bar-bg-success'
-    );
   }
 
   createCategory() {
     const dialogConfig: MatDialogConfig = {
       data: {
-        idRestaurant: this.routeRestaurantId,
+        editing: false,
       },
       width: '300px',
     };
@@ -139,6 +155,32 @@ export class SingleRestaurantComponent implements OnInit {
       CreateCategoryComponent,
       dialogConfig
     );
+  }
+
+  editCategoryHandler(event) {
+    this.editCategory(event);
+  }
+
+  editCategory(category) {
+    const dialogConfig: MatDialogConfig = {
+      data: {
+        editing: true,
+        idCategory: category._id,
+      },
+      width: '300px',
+    };
+    let dialog = this.coreService.openDialog(
+      CreateCategoryComponent,
+      dialogConfig
+    );
+  }
+
+  addNewProductHandler(event) {
+    this.addNewProduc();
+  }
+
+  addNewProduc() {
+    console.log('open add new product');
   }
 
   ngOnDestroy() {

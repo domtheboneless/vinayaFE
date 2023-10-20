@@ -68,7 +68,7 @@ export class ItemEditComponent implements OnInit {
   }
 
   close() {
-    this.dialogRef.close({ edit: this.edit });
+    this.dialogRef.close({ edit: this.edit, idCategory: this.idCategory });
   }
 
   preview() {

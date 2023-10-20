@@ -4,6 +4,7 @@ export interface Category {
   name: string;
   restaurantId: string[];
   items: Items[];
+  _id: string;
 }
 
 export interface Items {

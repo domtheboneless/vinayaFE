@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { forkJoin, map, switchMap, tap } from 'rxjs';
 import { User } from 'src/app/core/models/User.class';
 import { UserService } from 'src/app/modules/profile/service/user.service';
@@ -18,15 +18,25 @@ export class CreateCategoryComponent implements OnInit {
   selectedRestaurant: string[] = [];
   categoryForm: FormGroup;
 
+  isEdit = false;
+  editCategoryID;
+  subscription: any;
+
   constructor(
     private _fb: FormBuilder,
     private dialogRef: MatDialogRef<CreateCategoryComponent>,
+    @Inject(MAT_DIALOG_DATA) public dialogData: any,
     private authService: AuthService,
     private userService: UserService,
     private restaurantService: RestaurantService,
     private categoryService: CategoryService
   ) {}
   ngOnInit() {
+    if (this.dialogData && this.dialogData.editing) {
+      this.isEdit = true;
+      this.editCategoryID = this.dialogData.idCategory;
+    }
+
     this.authService.currentUserInfo$
       .pipe(
         switchMap((user: User) => {
@@ -62,18 +72,44 @@ export class CreateCategoryComponent implements OnInit {
       restaurantId: [[''], Validators.required],
       items: [[]],
     });
+
+    if (this.isEdit) {
+      this.subscription = this.categoryService
+        .getCategoryById(this.editCategoryID)
+        .subscribe((category) => {
+          this.categoryForm.patchValue({
+            name: category.name,
+            active: category.active,
+            restaurantId: category.restaurantId,
+          });
+        });
+    }
   }
 
   onSubmit() {
     if (this.categoryForm.valid) {
-      this.categoryService.createCategory(this.categoryForm.value).subscribe({
-        next: (resp) => console.log(resp),
-        error: (err) => console.log(err),
-      });
+      if (!this.isEdit) {
+        this.categoryService.createCategory(this.categoryForm.value).subscribe({
+          next: (resp) => {
+            console.log(resp);
+            this.dialogRef.close({ created: true });
+          },
+          error: (err) => console.log(err),
+        });
+      } else {
+        console.log('fai altro');
+      }
     }
   }
 
   onCancel() {
+    if (this.isEdit) {
+      this.unsubscribe();
+    }
     this.dialogRef.close();
+  }
+
+  unsubscribe() {
+    this.subscription.unsubscribe();
   }
 }

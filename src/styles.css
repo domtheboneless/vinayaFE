@@ -771,6 +771,25 @@ mat-label {
   border: 1px solid;
   font-size: smaller;
   padding: 0.5em;
+  width: max-content;
+}
+
+.v-edit-mode-btn-bottom {
+  animation-name: edit-btn;
+  animation-duration: 0.5s;
+  bottom: 0;
+}
+@keyframes edit-btn {
+  from {
+    bottom: -5rem;
+  }
+  to {
+    bottom: 0;
+  }
+}
+.v-edit-category-button {
+  border-radius: 10px 0 0px 10px;
+  font-size: 0.7rem;
 }
 
 .v-small-card-item {

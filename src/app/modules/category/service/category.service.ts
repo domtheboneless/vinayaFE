@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, finalize } from 'rxjs';
 import { Category, Items } from 'src/app/core/models/Category.class';
 import { CoreService } from 'src/app/core/services/core/core.service';
 import { environment } from 'src/environments/environment.development';
+import { RestaurantService } from '../../restaurant/service/restaurant.service';
 
 @Injectable({
   providedIn: 'root',
@@ -27,8 +28,6 @@ export class CategoryService {
     body.append('restaurantId', category.restaurantId);
     body.append('items', category.items);
 
-    console.log(body);
-
     return this.http
       .post<Category>(this.serverURL + 'createCategory', category, options)
       .pipe(
@@ -40,6 +39,10 @@ export class CategoryService {
 
   getCategoryByRestaurantId(id: string): Observable<Category> {
     return this.http.get<Category>(this.serverURL + 'restaurant/' + id);
+  }
+
+  getCategoryById(id: string): Observable<Category> {
+    return this.http.get<Category>(this.serverURL + id);
   }
 
   getSingleItem(id: string): Observable<Items> {
@@ -91,7 +94,6 @@ export class CategoryService {
     body.forEach((value, key) => {
       jsonObject[key] = value;
     });
-    console.log(jsonObject);
 
     return this.http
       .put<Items>(

@@ -1,10 +1,12 @@
-<mat-expansion-panel *ngIf="category.active" [expanded]="categoryOpen == category.name" class="v-noshadow "
-  (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+<mat-expansion-panel [id]="category.name" *ngIf="category" [expanded]="categoryOpen == category.name"
+  class="v-noshadow " (opened)="panelOpenState = true" (closed)="panelOpenState = false">
   <mat-expansion-panel-header>
     <mat-panel-title>
       {{category.name | capitalize}}
     </mat-panel-title>
   </mat-expansion-panel-header>
+
+
   <ng-container *ngFor="let itemMenu of category.items">
     <div class="w-100 mt-3 mb-3 v-itemMenu" *ngIf="itemMenu.inStock" (click)="openItem(itemMenu._id, category)">
       <div class="d-flex justify-content-between">
@@ -50,7 +52,7 @@
 
     </div>
   </ng-container>
-  <div class="w-100 mt-3 mb-3 v-itemMenu " *ngIf="editMode">
+  <div class="w-100 mt-3 mb-3 v-itemMenu " *ngIf="editMode" (click)="addNewProduct()">
     <div class="d-flex justify-content-between">
       <div class="col-3">
         <img class="v-item-menu-picture" style="border : none !important;"
@@ -63,8 +65,13 @@
         <p class="m-0"></p>
       </div>
       <div class="col-3 align-self-center px-2 ">
-        <p class="m-0 text-center v-item-menu-price v-edit-background" (click)="addNewProduct()"> Add</p>
+        <p class="m-0 text-center v-item-menu-price v-edit-background"> Add</p>
       </div>
+    </div>
+  </div>
+  <div class="d-flex w-100 justify-content-center" *ngIf="editMode" (click)="editCategory()">
+    <div class="d-flex  v-edit-background w-100 justify-content-center v-edit-category-button">
+      <span class="text-center text-white ">Modifica Categoria</span>
     </div>
   </div>
 </mat-expansion-panel>

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, finalize } from 'rxjs';
 import { Restaurant } from 'src/app/core/models/Restaurant.class';
@@ -27,5 +27,32 @@ export class RestaurantService {
         this.core.hideLoading();
       })
     );
+  }
+
+  addCategoryToMenuRestaurant(
+    idRestaurant,
+    idCategory
+  ): Observable<Restaurant> {
+    this.core.showLoading();
+
+    const bearer = localStorage.getItem('currentUser').replaceAll('"', '');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${bearer}`,
+    });
+    const options = { headers };
+    const body = new FormData();
+    body.append('menu', idCategory);
+
+    return this.http
+      .put<Restaurant>(
+        this.serverURL + 'edit/' + idRestaurant + '/menu/addCategory',
+        body,
+        options
+      )
+      .pipe(
+        finalize(() => {
+          this.core.hideLoading();
+        })
+      );
   }
 }
