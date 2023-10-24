@@ -1,18 +1,15 @@
 import {
   Component,
-  ElementRef,
   HostListener,
   OnInit,
-  Renderer2,
   ViewContainerRef,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RestaurantService } from '../../service/restaurant.service';
 import { Restaurant } from 'src/app/core/models/Restaurant.class';
-import { Observable, forkJoin, map, of, switchMap, tap } from 'rxjs';
+import { Observable, forkJoin, of, tap } from 'rxjs';
 import { CategoryService } from 'src/app/modules/category/service/category.service';
 import { Category } from 'src/app/core/models/Category.class';
-import { findElementByText } from 'src/app/core/utils/dom-utils';
 import { CoreService } from 'src/app/core/services/core/core.service';
 import { ItemDetailComponent } from 'src/app/modules/category/component/item-detail/item-detail.component';
 import { MatDialogConfig } from '@angular/material/dialog';
@@ -63,15 +60,28 @@ export class SingleRestaurantComponent implements OnInit {
               }
             }
           );
-
-          const categoryObservables = restaurant.menu.map((category) => {
-            return this.categoryService.getCategoryById(category);
-          });
-          forkJoin(categoryObservables).subscribe((categories) => {
-            this.categories$ = of(categories);
-          });
+          let cache = this.cacheService.get(this.routeRestaurantId);
+          if (
+            cache &&
+            cache.idRest == this.routeRestaurantId &&
+            cache.category
+          ) {
+            this.categories$ = cache.category;
+          } else {
+            this.getCategoryByRestaurant();
+          }
         })
       );
+  }
+
+  editModeToggle() {
+    this.editMode = !this.editMode;
+    let onOff;
+    if (this.editMode) {
+      onOff = ' attiva';
+    } else {
+      onOff = ' disattiva';
+    }
   }
 
   scrollToElement(categoryName: string) {
@@ -79,7 +89,6 @@ export class SingleRestaurantComponent implements OnInit {
     const selector = '#' + categoryName;
     const element =
       this.viewContainerRef.element.nativeElement.querySelector(selector);
-
     if (element) {
       const yOffset = element.getBoundingClientRect().top;
       window.scrollTo({ top: window.scrollY + yOffset, behavior: 'smooth' });
@@ -96,15 +105,12 @@ export class SingleRestaurantComponent implements OnInit {
     this.openItem(event.item, event.category);
   }
   openItem(item, category) {
-    const dialogConfig: MatDialogConfig = {
-      data: {
-        item: item,
-        restaurantHolder: this.restaurantHolder,
-        idCategory: category._id,
-      },
-      width: '300px',
-      panelClass: '',
-    };
+    const dialogConfig = this.createDialogConfig({
+      item: item,
+      restaurantHolder: this.restaurantHolder,
+      idCategory: category._id,
+    });
+
     let dialog;
     if (this.editMode) {
       dialog = this.coreService.openDialog(ItemEditComponent, dialogConfig);
@@ -115,46 +121,22 @@ export class SingleRestaurantComponent implements OnInit {
     dialog.afterClosed().subscribe((result) => {
       if (result.edit) {
         const categoryId = result.idCategory;
-
-        this.categoryService
-          .getCategoryById(categoryId)
-          .subscribe((updatedCategory) => {
-            this.categories$.subscribe((categories) => {
-              const updatedCategories = categories.map((category) => {
-                if (category._id === categoryId) {
-                  return updatedCategory;
-                } else {
-                  return category;
-                }
-              });
-              this.categories$ = of(updatedCategories);
-            });
-          });
+        this.updateCategory(categoryId);
       }
     });
   }
 
-  editModeToggle() {
-    this.editMode = !this.editMode;
-    let onOff;
-    if (this.editMode) {
-      onOff = ' attiva';
-    } else {
-      onOff = ' disattiva';
-    }
-  }
-
   createCategory() {
-    const dialogConfig: MatDialogConfig = {
-      data: {
-        editing: false,
-      },
-      width: '300px',
-    };
+    const dialogConfig = this.createDialogConfig({ editing: false });
     let dialog = this.coreService.openDialog(
       CreateCategoryComponent,
       dialogConfig
     );
+    dialog.afterClosed().subscribe((result) => {
+      if (result && result.created) {
+        this.getCategoryByRestaurant();
+      }
+    });
   }
 
   editCategoryHandler(event) {
@@ -162,25 +144,81 @@ export class SingleRestaurantComponent implements OnInit {
   }
 
   editCategory(category) {
-    const dialogConfig: MatDialogConfig = {
-      data: {
-        editing: true,
-        idCategory: category._id,
-      },
-      width: '300px',
-    };
+    const dialogConfig = this.createDialogConfig({
+      editing: true,
+      idCategory: category._id,
+    });
     let dialog = this.coreService.openDialog(
       CreateCategoryComponent,
       dialogConfig
     );
+
+    dialog.afterClosed().subscribe((result) => {
+      if (result && result.edit) {
+        const categoryId = result.idCategory;
+        this.updateCategory(categoryId);
+      } else if (result && result.deleted) {
+        this.getCategoryByRestaurant();
+      }
+    });
   }
 
   addNewProductHandler(event) {
-    this.addNewProduc();
+    this.addNewProduct();
   }
 
-  addNewProduc() {
+  addNewProduct() {
     console.log('open add new product');
+  }
+
+  // SUPPORT FUNCTION
+
+  private createDialogConfig(...data: any[]): MatDialogConfig {
+    const dialogConfig: MatDialogConfig = { width: '300px' };
+    if (data.length > 0) {
+      dialogConfig.data = Object.assign({}, ...data);
+    }
+    return dialogConfig;
+  }
+
+  updateCategory(id) {
+    this.categoryService.getCategoryById(id).subscribe((updatedCategory) => {
+      this.categories$.subscribe((categories) => {
+        const updatedCategories = categories.map((category) => {
+          if (category._id === id) {
+            return updatedCategory;
+          } else {
+            return category;
+          }
+        });
+        this.categories$ = of(updatedCategories);
+        this.updateCacheWithCategories(categories);
+      });
+    });
+  }
+
+  getCategoryByRestaurant(): void {
+    this.subscription = this.restaurantService
+      .getRestaurantById(this.routeRestaurantId)
+      .pipe(
+        tap((restaurant) => {
+          const categoryObservables = restaurant.menu.map((category) => {
+            return this.categoryService.getCategoryById(category);
+          });
+          forkJoin(categoryObservables).subscribe((categories) => {
+            this.updateCacheWithCategories(categories);
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  private updateCacheWithCategories(categories: Category[]): void {
+    this.cacheService.set(this.routeRestaurantId, {
+      category: of(categories),
+      idRest: this.routeRestaurantId,
+    });
+    this.categories$ = of(categories);
   }
 
   ngOnDestroy() {

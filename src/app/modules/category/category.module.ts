@@ -7,7 +7,6 @@ import { MaterialModule } from 'src/app/core/modules/material.module';
 import { ItemFormComponent } from './component/item-form/item-form.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CreateCategoryComponent } from './component/create-category/create-category.component';
-import { CapitalizePipe } from 'src/app/core/utils/pipe/capitalize.pipe';
 import { SharedModule } from '../shared/shared/shared.module';
 
 @NgModule({

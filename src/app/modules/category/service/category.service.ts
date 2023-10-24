@@ -16,20 +16,43 @@ export class CategoryService {
 
   createCategory(category): Observable<Category> {
     this.core.showLoading();
-    const bearer = localStorage.getItem('currentUser').replaceAll('"', '');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${bearer}`,
-    });
-    const options = { headers };
-
-    const body = new FormData();
-    body.append('name', category.name);
-    body.append('active', category.active);
-    body.append('restaurantId', category.restaurantId);
-    body.append('items', category.items);
+    const options = this.headers();
 
     return this.http
       .post<Category>(this.serverURL + 'createCategory', category, options)
+      .pipe(
+        finalize(() => {
+          this.core.hideLoading();
+        })
+      );
+  }
+
+  editCategory(idCategory, categoryForm): Observable<Category> {
+    this.core.showLoading();
+    const options = this.headers();
+
+    return this.http
+      .put<Category>(
+        this.serverURL + 'editCategory/' + idCategory,
+        categoryForm,
+        options
+      )
+      .pipe(
+        finalize(() => {
+          this.core.hideLoading();
+        })
+      );
+  }
+
+  deleteCategory(idCategory) {
+    this.core.showLoading();
+    const options = this.headers();
+
+    return this.http
+      .delete<Category>(
+        this.serverURL + 'deleteCategory/' + idCategory,
+        options
+      )
       .pipe(
         finalize(() => {
           this.core.hideLoading();
@@ -54,11 +77,7 @@ export class CategoryService {
 
   uploadImgItem(idCategory, idItem, file) {
     this.core.showLoading();
-    const bearer = localStorage.getItem('currentUser').replaceAll('"', '');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${bearer}`,
-    });
-    const options = { headers };
+    const options = this.headers();
 
     const body = new FormData();
     body.append('file', file.target.files[0]);
@@ -76,11 +95,8 @@ export class CategoryService {
 
   updateItem(itemForm, idCategory): Observable<Items> {
     this.core.showLoading();
-    const bearer = localStorage.getItem('currentUser').replaceAll('"', '');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${bearer}`,
-    });
-    const options = { headers };
+    const options = this.headers();
+
     const body = new FormData();
     body.append('name', itemForm.name);
     body.append('desc', itemForm.desc);
@@ -106,5 +122,14 @@ export class CategoryService {
           this.core.hideLoading();
         })
       );
+  }
+
+  private headers() {
+    const bearer = localStorage.getItem('currentUser').replaceAll('"', '');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${bearer}`,
+    });
+    const options = { headers };
+    return options;
   }
 }

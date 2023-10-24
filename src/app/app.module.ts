@@ -12,9 +12,10 @@ import { RouterModule } from '@angular/router';
 import { HomeComponent } from './components/home/home/home.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthGuardService } from './core/guards/auth-guard.service';
+import { DialogBoxComponent } from './components/dialog-box/dialog-box.component';
 
 @NgModule({
-  declarations: [AppComponent, MenuComponent, FooterComponent, HomeComponent],
+  declarations: [AppComponent, MenuComponent, FooterComponent, HomeComponent, DialogBoxComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

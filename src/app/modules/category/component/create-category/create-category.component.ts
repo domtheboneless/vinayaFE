@@ -1,12 +1,18 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogConfig,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { forkJoin, map, switchMap, tap } from 'rxjs';
 import { User } from 'src/app/core/models/User.class';
 import { UserService } from 'src/app/modules/profile/service/user.service';
 import { RestaurantService } from 'src/app/modules/restaurant/service/restaurant.service';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { CategoryService } from '../../service/category.service';
+import { CoreService } from 'src/app/core/services/core/core.service';
+import { DialogBoxComponent } from 'src/app/components/dialog-box/dialog-box.component';
 
 @Component({
   selector: 'app-create-category',
@@ -14,6 +20,9 @@ import { CategoryService } from '../../service/category.service';
   styleUrls: ['./create-category.component.css'],
 })
 export class CreateCategoryComponent implements OnInit {
+  submitBtn = 'Submit';
+  titleDialog = 'Crea una nuova categoria';
+
   availableRestaurant = [];
   selectedRestaurant: string[] = [];
   categoryForm: FormGroup;
@@ -21,6 +30,7 @@ export class CreateCategoryComponent implements OnInit {
   isEdit = false;
   editCategoryID;
   subscription: any;
+  myFormFields;
 
   constructor(
     private _fb: FormBuilder,
@@ -29,7 +39,8 @@ export class CreateCategoryComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService,
     private restaurantService: RestaurantService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private coreService: CoreService
   ) {}
   ngOnInit() {
     if (this.dialogData && this.dialogData.editing) {
@@ -69,14 +80,17 @@ export class CreateCategoryComponent implements OnInit {
     this.categoryForm = this._fb.group({
       name: ['', Validators.required],
       active: [false, Validators.required],
-      restaurantId: [[''], Validators.required],
+      restaurantId: [[], Validators.required],
       items: [[]],
     });
 
     if (this.isEdit) {
+      this.submitBtn = 'update';
+
       this.subscription = this.categoryService
         .getCategoryById(this.editCategoryID)
         .subscribe((category) => {
+          this.titleDialog = 'Modifica categoria: ' + category.name;
           this.categoryForm.patchValue({
             name: category.name,
             active: category.active,
@@ -97,9 +111,56 @@ export class CreateCategoryComponent implements OnInit {
           error: (err) => console.log(err),
         });
       } else {
-        console.log('fai altro');
+        this.categoryService
+          .editCategory(this.editCategoryID, this.categoryForm.value)
+          .subscribe({
+            next: (resp) => {
+              this.dialogRef.close({
+                edit: true,
+                idCategory: this.editCategoryID,
+              });
+            },
+            error: (err) => console.log(err),
+          });
       }
     }
+  }
+
+  deleteCategory() {
+    const dialogConfig: MatDialogConfig = {
+      data: {
+        message: 'Eliminare categoria?',
+        description: 'La categoria verrà rimossa da tutti i ristoranti.',
+        actionButton: 'delete',
+      },
+    };
+
+    let dialog = this.coreService.openDialog(DialogBoxComponent, dialogConfig);
+    dialog.afterClosed().subscribe((result) => {
+      if (result.submit) {
+        this.categoryService.deleteCategory(this.editCategoryID).subscribe({
+          next: (result) => {
+            this.coreService.snackBar(
+              'Category deleted',
+              'OK',
+              'v-snack-bar-bg-success'
+            );
+            this.dialogRef.close({
+              deleted: true,
+              idCategory: this.editCategoryID,
+            });
+          },
+          error: (err) => {
+            this.coreService.snackBar(
+              'Error: ' + err,
+              'OK',
+              'v-snack-bar-bg-danger'
+            );
+            console.log(err);
+          },
+        });
+      }
+    });
   }
 
   onCancel() {

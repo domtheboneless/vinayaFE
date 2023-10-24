@@ -93,7 +93,7 @@ body {
 
 /*PALETTE TEXT AND BACKGROUND*/
 .v-primary-text {
-  color: var(--vinaya-green);
+  color: var(--vinaya-black) !important;
 }
 
 .v-primary-red-text {
@@ -790,6 +790,14 @@ mat-label {
 .v-edit-category-button {
   border-radius: 10px 0 0px 10px;
   font-size: 0.7rem;
+}
+
+.edit-category-span {
+  background: var(--vinaya-edit-mode-color) !important;
+  padding: 0.3em;
+  border-radius: 15px;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
 }
 
 .v-small-card-item {
