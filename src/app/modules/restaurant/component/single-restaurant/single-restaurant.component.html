@@ -17,7 +17,8 @@
           (click)="openItem(category.items[category.items.length - 1]._id, category)">
           <div class="v-restaurant-item-novita" *ngIf="category.active && category.items.length > 0"
             [ngStyle]="{ 'background-image': 'url(' + category.items[category.items.length - 1].picture + ')' }">
-            <h2 class="v-restaurant-item-novita-badge">{{category.items[category.items.length - 1].name}}</h2>
+            <h2 class="v-restaurant-item-novita-badge">{{category.items[category.items.length - 1].name | capitalize}}
+            </h2>
           </div>
         </div>
       </div>

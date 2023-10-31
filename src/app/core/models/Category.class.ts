@@ -8,7 +8,7 @@ export interface Category {
 }
 
 export interface Items {
-  id: string;
+  _id: string;
   name: string;
   username: string;
   desc: string;

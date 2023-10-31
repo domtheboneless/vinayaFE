@@ -1,18 +1,16 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { CoreService } from 'src/app/core/services/core/core.service';
-import { RestaurantService } from 'src/app/modules/restaurant/service/restaurant.service';
-import { CategoryService } from '../../service/category.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth/auth.service';
-import { BehaviorSubject, Observable, of, switchMap } from 'rxjs';
-import { Items } from 'src/app/core/models/Category.class';
 import {
-  MAT_DIALOG_DATA,
-  MatDialogConfig,
-  MatDialogRef,
-} from '@angular/material/dialog';
-import { ItemDetailComponent } from '../item-detail/item-detail.component';
-import { AuthGuardService } from 'src/app/core/guards/auth-guard.service';
+  Component,
+  ElementRef,
+  Inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { CoreService } from 'src/app/core/services/core/core.service';
+import { CategoryService } from '../../service/category.service';
+import { Observable, shareReplay, switchMap } from 'rxjs';
+import { TemplateRef } from '@angular/core';
+import { Items } from 'src/app/core/models/Category.class';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-item-edit',
@@ -24,66 +22,86 @@ export class ItemEditComponent implements OnInit {
   itemPreview;
   item$: Observable<Items>;
   itemId;
-  edit = false;
+  updateCategory = false;
   idCategory;
+
+  tempImage: string; // Inizialmente nulla
+  tempImageFile: string;
 
   constructor(
     private core: CoreService,
     private categoryService: CategoryService,
-    private activeRoute: ActivatedRoute,
-    private authService: AuthService,
     @Inject(MAT_DIALOG_DATA) public dialogData: any,
     private dialogRef: MatDialogRef<ItemEditComponent>
   ) {}
 
   ngOnInit() {
     this.idCategory = this.dialogData.idCategory;
-    this.itemId = this.dialogData.item;
-    if (this.dialogData.itemPreview) {
-      this.item$ = of(this.dialogData.itemPreview);
-    } else {
-      this.currentItem = this.activeRoute.snapshot.params['idItem'];
-      this.item$ = this.categoryService.getSingleItem(this.itemId);
+    if (this.dialogData.eventType != 'N') {
+      this.itemId = this.dialogData?.item;
+      this.item$ = this.categoryService
+        .getSingleItem(this.itemId)
+        .pipe(shareReplay());
     }
   }
 
   uploadImgItem(file) {
-    this.categoryService
-      .uploadImgItem(this.dialogData.idCategory, this.itemId, file)
-      .pipe(
-        switchMap(
-          () => (this.item$ = this.categoryService.getSingleItem(this.itemId))
-        )
-      )
-      .subscribe(
-        (response) => {
-          this.core.snackBar('Upload success', 'OK', 'v-snack-bar-bg-success');
-          this.edit = true;
-          this.close();
-        },
-        (err) => {
-          this.core.snackBar(err.error.message, 'OK', 'v-snack-bar-bg-danger');
-        }
+    if (
+      file.target.files[0].type == 'image/png' ||
+      file.target.files[0].type == 'image/jpeg' ||
+      file.target.files[0].type == 'image/jpg'
+    ) {
+      if (this.dialogData.eventType != 'N') {
+        this.categoryService
+          .uploadImgItem(this.dialogData.idCategory, this.itemId, file)
+          .pipe(
+            switchMap(
+              () =>
+                (this.item$ = this.categoryService.getSingleItem(this.itemId))
+            )
+          )
+          .subscribe(
+            (response) => {
+              this.core.snackBar(
+                'Upload success',
+                'OK',
+                'v-snack-bar-bg-success'
+              );
+              this.updateCategory = true;
+              this.close();
+            },
+            (err) => {
+              this.core.snackBar(
+                err.error.message,
+                'OK',
+                'v-snack-bar-bg-danger'
+              );
+            }
+          );
+      } else {
+        const maxWidth = 800;
+        const maxHeight = 800;
+        this.tempImageFile = file;
+        this.resizeImage(file.target.files[0], maxWidth, maxHeight).then(
+          (resizedImage) => {
+            this.tempImage = URL.createObjectURL(resizedImage);
+          }
+        );
+      }
+    } else {
+      this.core.snackBar(
+        'Not supported image',
+        'Try again',
+        'v-snack-bar-bg-danger'
       );
+    }
   }
 
   close() {
-    this.dialogRef.close({ edit: this.edit, idCategory: this.idCategory });
-  }
-
-  preview() {
-    this.close();
-    const dialogConfig: MatDialogConfig = {
-      data: {
-        item: this.itemId,
-        preview: true,
-        itemPreview: this.itemPreview,
-        idCategory: this.dialogData.idCategory,
-      },
-      width: '300px',
-      panelClass: '',
-    };
-    let dialog = this.core.openDialog(ItemDetailComponent, dialogConfig);
+    this.dialogRef.close({
+      updateCategory: this.updateCategory,
+      idCategory: this.idCategory,
+    });
   }
 
   handleFormSubmit(formData: any) {
@@ -92,9 +110,43 @@ export class ItemEditComponent implements OnInit {
 
   handleOnSuccess(bool) {
     if (bool) {
-      this.edit = true;
+      this.updateCategory = true;
       this.close();
     }
+  }
+
+  async resizeImage(
+    file: File,
+    maxWidth: number,
+    maxHeight: number
+  ): Promise<Blob> {
+    const img = await createImageBitmap(file);
+
+    let newWidth = maxWidth;
+    let newHeight = maxHeight;
+    const aspectRatio = img.width / img.height;
+
+    if (img.width / img.height < maxWidth / maxHeight) {
+      newHeight = maxWidth / aspectRatio;
+    } else {
+      newWidth = maxHeight * aspectRatio;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = maxWidth;
+    canvas.height = maxHeight;
+    const ctx = canvas.getContext('2d');
+
+    const xOffset = (maxWidth - newWidth) / 2;
+    const yOffset = (maxHeight - newHeight) / 2;
+
+    ctx.drawImage(img, xOffset, yOffset, newWidth, newHeight);
+
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, file.type);
+    });
   }
 }
 //

@@ -1,9 +1,9 @@
 :root {
-  --vinaya-red: #f88d8b;
+  --vinaya-red: #978573;
   --vinaya-cyan: #f17300;
   --vinaya-dark: #d64933;
   --vinaya-black: #2b303a;
-  --vinaya-gray: #7c7c7c;
+  --vinaya-gray: #d1d1d1;
   --vinaya-light-gray: #c8c8c8;
   --vinaya-white: #fff7ef;
   --vinaya-green: #00d8d8;
@@ -156,6 +156,7 @@ body {
 .v-letter-space-2 {
   letter-spacing: 2px;
 }
+
 /* SNACK BAR COLOR*/
 
 .v-snack-bar-bg-danger {
@@ -272,8 +273,8 @@ input:checked + .slider:before {
 }
 
 .v-button {
-  background-color: var(--vinaya-cyan) !important;
-  color: white !important;
+  background-color: var(--vinaya-cyan);
+  color: white;
   /* width: 100%; */
   box-shadow: black 1px solid;
   font-family: "Roboto", sans-serif;
@@ -281,6 +282,8 @@ input:checked + .slider:before {
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   letter-spacing: 1px;
   text-transform: uppercase;
+  border: none;
+  padding: 0.4em;
 }
 
 .v-button-small {
@@ -330,8 +333,8 @@ input:checked + .slider:before {
 }
 
 .v-button-disabled {
-  background-color: var(--vinaya-red) !important;
-  color: gray !important;
+  background-color: var(--vinaya-gray) !important;
+  color: rgb(255, 255, 255) !important;
 }
 
 .v-inupt {
@@ -383,6 +386,10 @@ input:checked + .slider:before {
 }
 
 /*MATERIAL OVERRIDE*/
+
+.btn:hover {
+  /* background-color: var(--vinaya-cyan) !important; */
+}
 
 .mat-primary .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-full,
 .mat-primary .mat-pseudo-checkbox-indeterminate.mat-pseudo-checkbox-full {

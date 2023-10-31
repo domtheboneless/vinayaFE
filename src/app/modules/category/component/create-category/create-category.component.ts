@@ -101,7 +101,7 @@ export class CreateCategoryComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.categoryForm.valid) {
+    if (this.categoryForm.valid && this.categoryForm.dirty) {
       if (!this.isEdit) {
         this.categoryService.createCategory(this.categoryForm.value).subscribe({
           next: (resp) => {
@@ -164,6 +164,8 @@ export class CreateCategoryComponent implements OnInit {
   }
 
   onCancel() {
+    console.log('cancel');
+
     if (this.isEdit) {
       this.unsubscribe();
     }

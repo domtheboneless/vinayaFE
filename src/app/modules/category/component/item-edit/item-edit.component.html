@@ -1,10 +1,18 @@
-<ng-container *ngIf="item$ | async as item">
+<ng-container>
   <div class="v-white-background pt-3 v-border-radius-100-0 position-relative" style="margin-top: 10rem; height: 80vh;">
     <div class="d-flex justify-content-center position-absolute" style="top: -90px;">
       <div class="image-container ">
-        <img class="img-fluid v-img v-border-white-10px" *ngIf="item.picture" [src]="item.picture" width="50%">
-        <img class="img-fluid v-img v-border-white-10px" *ngIf="!item.picture"
-          src="../../../../../assets/images/core/nopictureitem.png" alt="" width="50%">
+        <ng-container *ngIf="item$ | async as item; else noitemPicture">
+          <img class="img-fluid v-img v-border-white-10px" *ngIf="item.picture" [src]="item.picture" width="50%">
+          <img class="img-fluid v-img v-border-white-10px" *ngIf="!item.picture"
+            src="../../../../../assets/images/core/nopictureitem.png" alt="" width="50%">
+        </ng-container>
+        <ng-template #noitemPicture>
+
+          <img *ngIf="!tempImage" class="img-fluid v-img v-border-white-10px"
+            src="../../../../../assets/images/core/nopictureitem.png" alt="" width="50%">
+          <img *ngIf="tempImage" class="img-fluid v-img v-border-white-10px" [src]="tempImage" alt="" width="50%">
+        </ng-template>
         <div class="gradient-overlay v-border-white-10px">
           <input type="file" #fileInput style="display: none;" (change)="uploadImgItem($event)">
           <div class="d-flex" (click)="fileInput.click()">
@@ -15,12 +23,19 @@
       </div>
     </div>
     <div class="v-padding-area v-mt-5">
-      <app-item-form [item]="item" [idCategory]="idCategory" (formSubmitted)="handleFormSubmit($event)"
-        (onSubmitSuccess)="handleOnSuccess($event)"></app-item-form>
-      <div class="d-flex justify-content-center align-items-center w-100 mb-4 mt-3" style="z-index: 100;">
-        <div class="col-3 v-small v-shadow text-center v-border-50 v-border-1px-solid" (click)="close()"
-          style="padding: .5rem;">
-          <span class="v-letterspace-2px">BACK</span>
+      <ng-container *ngIf="item$ | async as item; else noitem">
+        <app-item-form [item]="item" [idCategory]="idCategory" (formSubmitted)="handleFormSubmit($event)"
+          (onSubmitSuccess)="handleOnSuccess($event)"></app-item-form>
+      </ng-container>
+      <ng-template #noitem>
+        <app-item-form [tempImageFile]="tempImageFile" [idCategory]="idCategory"
+          (formSubmitted)="handleFormSubmit($event)" [newItem]="true"
+          (onSubmitSuccess)="handleOnSuccess($event)"></app-item-form>
+      </ng-template>
+
+      <div class="d-flex justify-content-center align-items-center w-100 mb-4 mt-3">
+        <div class="col-3 v-small v-shadow text-center v-border-50 v-border-1px-solid" style="padding: .5rem;">
+          <span class="v-letterspace-2px" (click)="close()">BACK</span>
         </div>
       </div>
     </div>

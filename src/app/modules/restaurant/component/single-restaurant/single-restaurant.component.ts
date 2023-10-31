@@ -29,6 +29,7 @@ export class SingleRestaurantComponent implements OnInit {
   routeRestaurantId;
   restaurant$: Observable<Restaurant>;
   categories$: Observable<Category[]>;
+  currentRestaurant;
   categoryOpen;
   restaurantHolder = false;
   subscription;
@@ -50,6 +51,7 @@ export class SingleRestaurantComponent implements OnInit {
       .getRestaurantById(this.routeRestaurantId)
       .pipe(
         tap((restaurant) => {
+          this.currentRestaurant = restaurant;
           this.subscription = this.authService.currentUserInfo$.subscribe(
             (currentUser) => {
               if (
@@ -119,7 +121,7 @@ export class SingleRestaurantComponent implements OnInit {
     }
 
     dialog.afterClosed().subscribe((result) => {
-      if (result.edit) {
+      if (result.updateCategory) {
         const categoryId = result.idCategory;
         this.updateCategory(categoryId);
       }
@@ -154,7 +156,7 @@ export class SingleRestaurantComponent implements OnInit {
     );
 
     dialog.afterClosed().subscribe((result) => {
-      if (result && result.edit) {
+      if (result && result.updateCategory) {
         const categoryId = result.idCategory;
         this.updateCategory(categoryId);
       } else if (result && result.deleted) {
@@ -164,11 +166,24 @@ export class SingleRestaurantComponent implements OnInit {
   }
 
   addNewProductHandler(event) {
-    this.addNewProduct();
+    this.addNewProduct(event);
   }
 
-  addNewProduct() {
-    console.log('open add new product');
+  addNewProduct(event) {
+    const dialogConfig = this.createDialogConfig({
+      eventType: 'N',
+      restaurantHolder: this.restaurantHolder,
+      idCategory: event.category._id,
+    });
+
+    let dialog = this.coreService.openDialog(ItemEditComponent, dialogConfig);
+
+    dialog.afterClosed().subscribe((result) => {
+      if (result && result.updateCategory) {
+        const categoryId = result.idCategory;
+        this.updateCategory(categoryId);
+      }
+    });
   }
 
   // SUPPORT FUNCTION
@@ -192,25 +207,35 @@ export class SingleRestaurantComponent implements OnInit {
           }
         });
         this.categories$ = of(updatedCategories);
-        this.updateCacheWithCategories(categories);
+        this.updateCacheWithCategories(updatedCategories);
       });
     });
   }
 
   getCategoryByRestaurant(): void {
-    this.subscription = this.restaurantService
-      .getRestaurantById(this.routeRestaurantId)
-      .pipe(
-        tap((restaurant) => {
-          const categoryObservables = restaurant.menu.map((category) => {
-            return this.categoryService.getCategoryById(category);
-          });
-          forkJoin(categoryObservables).subscribe((categories) => {
-            this.updateCacheWithCategories(categories);
-          });
-        })
-      )
-      .subscribe();
+    const categoryObservables = this.currentRestaurant.menu.map((category) => {
+      return this.categoryService.getCategoryById(category);
+    });
+
+    this.subscription = forkJoin(categoryObservables).subscribe(
+      (categories: Category[]) => {
+        this.updateCacheWithCategories(categories);
+      }
+    );
+
+    // this.subscription = this.restaurantService
+    //   .getRestaurantById(this.routeRestaurantId)
+    //   .pipe(
+    //     tap((restaurant) => {
+    //       const categoryObservables = restaurant.menu.map((category) => {
+    //         return this.categoryService.getCategoryById(category);
+    //       });
+    //       forkJoin(categoryObservables).subscribe((categories) => {
+    //         this.updateCacheWithCategories(categories);
+    //       });
+    //     })
+    //   )
+    //   .subscribe();
   }
 
   private updateCacheWithCategories(categories: Category[]): void {
@@ -222,6 +247,8 @@ export class SingleRestaurantComponent implements OnInit {
   }
 
   ngOnDestroy() {
+    console.log('unsub');
+
     this.subscription.unsubscribe();
   }
 }

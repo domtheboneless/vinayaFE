@@ -68,6 +68,22 @@ export class CategoryService {
     return this.http.get<Category>(this.serverURL + id);
   }
 
+  addItemToCategory(body, idCategory): Observable<Items> {
+    this.core.showLoading();
+    const options = this.headers();
+    return this.http
+      .put<Items>(
+        this.serverURL + 'addItemToCategory/' + idCategory,
+        body,
+        options
+      )
+      .pipe(
+        finalize(() => {
+          this.core.hideLoading();
+        })
+      );
+  }
+
   getSingleItem(id: string): Observable<Items> {
     this.core.showLoading();
     return this.http

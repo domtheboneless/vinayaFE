@@ -23,7 +23,7 @@ export class CategoryExpansionPanelComponent implements OnInit {
   @Input() categoryOpen;
 
   @Output() openItemEmitter: EventEmitter<any> = new EventEmitter();
-  @Output() addNewProductEmitter: EventEmitter<boolean> = new EventEmitter();
+  @Output() addNewProductEmitter: EventEmitter<any> = new EventEmitter();
   @Output() editCategoryEmitter: EventEmitter<any> = new EventEmitter();
   ngOnInit(): void {}
 
@@ -34,7 +34,10 @@ export class CategoryExpansionPanelComponent implements OnInit {
   }
 
   addNewProduct() {
-    this.addNewProductEmitter.emit(true);
+    this.addNewProductEmitter.emit({
+      newProduct: true,
+      category: this.category,
+    });
   }
 
   editCategory() {
