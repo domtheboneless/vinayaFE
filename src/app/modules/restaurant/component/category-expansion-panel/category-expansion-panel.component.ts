@@ -21,6 +21,7 @@ export class CategoryExpansionPanelComponent implements OnInit {
   @Input() restaurantHolder: boolean;
   @Input() openMatPanelInput;
   @Input() categoryOpen;
+  @Input() draggableItem: boolean;
 
   @Output() openItemEmitter: EventEmitter<any> = new EventEmitter();
   @Output() addNewProductEmitter: EventEmitter<any> = new EventEmitter();

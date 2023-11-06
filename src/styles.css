@@ -4,7 +4,7 @@
   --vinaya-dark: #d64933;
   --vinaya-black: #2b303a;
   --vinaya-gray: #d1d1d1;
-  --vinaya-light-gray: #c8c8c8;
+  --vinaya-light-gray: #e8e8e8;
   --vinaya-white: #fff7ef;
   --vinaya-green: #00d8d8;
   --vinaya-error: rgb(177, 0, 0);
@@ -102,6 +102,10 @@ body {
 
 .v-dark-text {
   color: var(--vinaya-dark) !important;
+}
+
+.v-primary-text {
+  color: var(--vinaya-cyan) !important;
 }
 
 .v-white-text {
@@ -260,6 +264,10 @@ input:checked + .slider:before {
   border-radius: 100px;
   font-size: larger;
 }
+
+button:focus-visible {
+  outline: none !important;
+}
 .v-button-big {
   background-color: var(--vinaya-cyan) !important;
   color: white !important;
@@ -270,6 +278,20 @@ input:checked + .slider:before {
   letter-spacing: 2.5px;
   border-radius: 0px 50px !important;
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.v-button-cancel {
+  background-color: white;
+  color: black;
+  /* width: 100%; */
+  box-shadow: black 1px solid;
+  font-family: "Roboto", sans-serif;
+  border-radius: 100px;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  padding: 0.4em 1em;
 }
 
 .v-button {
@@ -283,7 +305,8 @@ input:checked + .slider:before {
   letter-spacing: 1px;
   text-transform: uppercase;
   border: none;
-  padding: 0.4em;
+
+  padding: 0.4em 1em;
 }
 
 .v-button-small {
@@ -387,8 +410,8 @@ input:checked + .slider:before {
 
 /*MATERIAL OVERRIDE*/
 
-.btn:hover {
-  /* background-color: var(--vinaya-cyan) !important; */
+.mat-mdc-form-field-error {
+  color: var(--vinaya-dark) !important;
 }
 
 .mat-primary .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-full,
@@ -409,6 +432,10 @@ input:checked + .slider:before {
 .cdk-overlay-pane {
   max-width: 100% !important;
   width: auto !important;
+}
+
+.cdk-overlay-dark-backdrop {
+  backdrop-filter: blur(0.75px) !important;
 }
 .mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-line-ripple::after {
   border-bottom-color: var(--vinaya-dark) !important;
@@ -439,15 +466,69 @@ input:checked + .slider:before {
   padding-right: 0 !important;
 }
 .mat-mdc-dialog-container .mdc-dialog__surface {
-  background-color: transparent !important;
 }
 
 .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: transparent !important;
   box-shadow: none !important;
+  /* border-radius: 100px 0px 100px 100px !important; */
 }
 
 mat-label {
   color: var(--vinaya-cyan) !important;
+}
+
+/*CDK DRAG*/
+
+.example-list {
+  width: 500px;
+  max-width: 100%;
+  border: solid 1px #ccc;
+  min-height: 60px;
+  display: block;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.example-box {
+  padding: 20px 10px;
+  border-bottom: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: move;
+  background: white;
+  font-size: 14px;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-box:last-child {
+  border: none;
+}
+
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-custom-placeholder {
+  background: #ccc;
+  border: dotted 3px #999;
+  min-height: 60px;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 /* CAROUSEL */
@@ -839,7 +920,7 @@ mat-label {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  border-radius: 100px 10px 0 0;
+  border-radius: 100px;
   position: relative;
   display: flex;
   justify-content: end;
@@ -853,12 +934,23 @@ mat-label {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, transparent, #000000);
-  opacity: 0.6;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    transparent,
+    var(--vinaya-cyan)
+  );
+  opacity: 0.3;
   z-index: 1;
-  border-radius: 100px 10px 0 0;
+  border-radius: 100px;
 }
 
+.v-item-detail-bg {
+  padding-top: 1em;
+  background: #00000024;
+  width: 100%;
+  border-radius: 100px 100px 0 0;
+}
 .v-item-img-text {
   z-index: 2;
 }
@@ -867,7 +959,9 @@ mat-label {
   /* height: 20vh; */
   width: 100%;
   z-index: 2;
+  background: #00000024 !important;
   background: linear-gradient(0deg, #00000080, transparent);
+  border-radius: 0px 0px 100px 100px;
 }
 
 .v-item-qta-number {

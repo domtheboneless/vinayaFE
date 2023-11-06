@@ -84,6 +84,24 @@ export class CategoryService {
       );
   }
 
+  deleteItemFromCategory(idItem, idCategory): Observable<Category> {
+    this.core.showLoading();
+    const options = this.headers();
+    const jsonObject = { id: idItem };
+
+    return this.http
+      .put<Category>(
+        this.serverURL + 'removeItemFromCategory/' + idCategory,
+        jsonObject,
+        options
+      )
+      .pipe(
+        finalize(() => {
+          this.core.hideLoading();
+        })
+      );
+  }
+
   getSingleItem(id: string): Observable<Items> {
     this.core.showLoading();
     return this.http

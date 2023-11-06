@@ -2,6 +2,7 @@ import {
   Component,
   HostListener,
   OnInit,
+  ViewChild,
   ViewContainerRef,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -18,6 +19,15 @@ import { ItemEditComponent } from 'src/app/modules/category/component/item-edit/
 import { CreateCategoryComponent } from 'src/app/modules/category/component/create-category/create-category.component';
 import { CacheService } from 'src/app/core/services/cache/cache.service';
 
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragPlaceholder,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
+import { MatAccordion } from '@angular/material/expansion';
+
 @Component({
   selector: 'app-single-restaurant',
   templateUrl: './single-restaurant.component.html',
@@ -25,15 +35,20 @@ import { CacheService } from 'src/app/core/services/cache/cache.service';
 })
 export class SingleRestaurantComponent implements OnInit {
   isElementFixed = false;
+  editModeFixed = false;
+  draggableItem = false;
+  @ViewChild(MatAccordion) accordion: MatAccordion;
 
   routeRestaurantId;
   restaurant$: Observable<Restaurant>;
   categories$: Observable<Category[]>;
+  categoriesArray;
   currentRestaurant;
   categoryOpen;
   restaurantHolder = false;
   subscription;
   editMode = false;
+  tokenExpired = false;
 
   constructor(
     private activeRoute: ActivatedRoute,
@@ -54,6 +69,8 @@ export class SingleRestaurantComponent implements OnInit {
           this.currentRestaurant = restaurant;
           this.subscription = this.authService.currentUserInfo$.subscribe(
             (currentUser) => {
+              this.tokenExpired =
+                currentUser.exp < Date.now() / 1000 ? true : false;
               if (
                 currentUser &&
                 restaurant.profile.username == currentUser['cognito:username']
@@ -76,7 +93,34 @@ export class SingleRestaurantComponent implements OnInit {
       );
   }
 
+  updateOrderProperty(): void {
+    const jsonObject = { menu: this.categoriesArray };
+
+    setTimeout(() => {
+      this.restaurantService
+        .editProfile(jsonObject, this.routeRestaurantId)
+        .subscribe();
+    }, 1000);
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(
+      this.categoriesArray,
+      event.previousIndex,
+      event.currentIndex
+    );
+    this.updateOrderProperty();
+  }
+
+  draggable() {
+    this.draggableItem = !this.draggableItem;
+    this.accordion.closeAll();
+  }
+
   editModeToggle() {
+    if (this.tokenExpired) {
+      this.authService.logout();
+    }
     this.editMode = !this.editMode;
     let onOff;
     if (this.editMode) {
@@ -88,11 +132,12 @@ export class SingleRestaurantComponent implements OnInit {
 
   scrollToElement(categoryName: string) {
     this.categoryOpen = categoryName;
-    const selector = '#' + categoryName;
+    const selector = '#' + categoryName.replaceAll(' ', '');
     const element =
       this.viewContainerRef.element.nativeElement.querySelector(selector);
+
     if (element) {
-      const yOffset = element.getBoundingClientRect().top;
+      const yOffset = element.getBoundingClientRect().top - 150;
       window.scrollTo({ top: window.scrollY + yOffset, behavior: 'smooth' });
     }
   }
@@ -100,7 +145,8 @@ export class SingleRestaurantComponent implements OnInit {
   @HostListener('window:scroll', ['$event'])
   onScroll() {
     const scrollPosition = window.pageYOffset;
-    this.isElementFixed = scrollPosition > 500;
+    this.isElementFixed = scrollPosition > 450;
+    this.editModeFixed = scrollPosition > 326;
   }
 
   openItemHandler(event) {
@@ -121,9 +167,10 @@ export class SingleRestaurantComponent implements OnInit {
     }
 
     dialog.afterClosed().subscribe((result) => {
-      if (result.updateCategory) {
+      if (result && result.updateCategory) {
         const categoryId = result.idCategory;
         this.updateCategory(categoryId);
+        this.categoryOpen = category.name;
       }
     });
   }
@@ -156,7 +203,7 @@ export class SingleRestaurantComponent implements OnInit {
     );
 
     dialog.afterClosed().subscribe((result) => {
-      if (result && result.updateCategory) {
+      if (result && result.edit) {
         const categoryId = result.idCategory;
         this.updateCategory(categoryId);
       } else if (result && result.deleted) {
@@ -186,8 +233,6 @@ export class SingleRestaurantComponent implements OnInit {
     });
   }
 
-  // SUPPORT FUNCTION
-
   private createDialogConfig(...data: any[]): MatDialogConfig {
     const dialogConfig: MatDialogConfig = { width: '300px' };
     if (data.length > 0) {
@@ -197,6 +242,7 @@ export class SingleRestaurantComponent implements OnInit {
   }
 
   updateCategory(id) {
+    this.cacheService.clear();
     this.categoryService.getCategoryById(id).subscribe((updatedCategory) => {
       this.categories$.subscribe((categories) => {
         const updatedCategories = categories.map((category) => {
@@ -207,35 +253,30 @@ export class SingleRestaurantComponent implements OnInit {
           }
         });
         this.categories$ = of(updatedCategories);
+        if (!updatedCategory.restaurantId.includes(this.routeRestaurantId)) {
+          this.getCategoryByRestaurant();
+        }
         this.updateCacheWithCategories(updatedCategories);
       });
     });
   }
 
-  getCategoryByRestaurant(): void {
-    const categoryObservables = this.currentRestaurant.menu.map((category) => {
-      return this.categoryService.getCategoryById(category);
-    });
-
-    this.subscription = forkJoin(categoryObservables).subscribe(
-      (categories: Category[]) => {
-        this.updateCacheWithCategories(categories);
-      }
-    );
-
-    // this.subscription = this.restaurantService
-    //   .getRestaurantById(this.routeRestaurantId)
-    //   .pipe(
-    //     tap((restaurant) => {
-    //       const categoryObservables = restaurant.menu.map((category) => {
-    //         return this.categoryService.getCategoryById(category);
-    //       });
-    //       forkJoin(categoryObservables).subscribe((categories) => {
-    //         this.updateCacheWithCategories(categories);
-    //       });
-    //     })
-    //   )
-    //   .subscribe();
+  getCategoryByRestaurant() {
+    this.subscription = this.restaurantService
+      .getRestaurantById(this.routeRestaurantId)
+      .pipe(
+        tap((restaurant) => {
+          this.restaurant$ = of(restaurant);
+          const categoryObservables = restaurant.menu.map((category) => {
+            return this.categoryService.getCategoryById(category);
+          });
+          forkJoin(categoryObservables).subscribe((categories) => {
+            this.categoriesArray = categories;
+            this.updateCacheWithCategories(categories);
+          });
+        })
+      )
+      .subscribe();
   }
 
   private updateCacheWithCategories(categories: Category[]): void {

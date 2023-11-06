@@ -24,12 +24,11 @@
     </div>
     <div class="v-padding-area v-mt-5">
       <ng-container *ngIf="item$ | async as item; else noitem">
-        <app-item-form [item]="item" [idCategory]="idCategory" (formSubmitted)="handleFormSubmit($event)"
+        <app-item-form [item]="item" [idCategory]="idCategory"
           (onSubmitSuccess)="handleOnSuccess($event)"></app-item-form>
       </ng-container>
       <ng-template #noitem>
-        <app-item-form [tempImageFile]="tempImageFile" [idCategory]="idCategory"
-          (formSubmitted)="handleFormSubmit($event)" [newItem]="true"
+        <app-item-form [tempImageFile]="tempImageFile" [idCategory]="idCategory" [newItem]="true"
           (onSubmitSuccess)="handleOnSuccess($event)"></app-item-form>
       </ng-template>
 

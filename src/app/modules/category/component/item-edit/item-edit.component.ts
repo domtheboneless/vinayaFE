@@ -10,7 +10,12 @@ import { CategoryService } from '../../service/category.service';
 import { Observable, shareReplay, switchMap } from 'rxjs';
 import { TemplateRef } from '@angular/core';
 import { Items } from 'src/app/core/models/Category.class';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogConfig,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { DialogBoxComponent } from 'src/app/components/dialog-box/dialog-box.component';
 
 @Component({
   selector: 'app-item-edit',
@@ -18,13 +23,11 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./item-edit.component.css'],
 })
 export class ItemEditComponent implements OnInit {
-  currentItem;
-  itemPreview;
   item$: Observable<Items>;
   itemId;
   updateCategory = false;
   idCategory;
-
+  subscribe;
   tempImage: string; // Inizialmente nulla
   tempImageFile: string;
 
@@ -104,17 +107,44 @@ export class ItemEditComponent implements OnInit {
     });
   }
 
-  handleFormSubmit(formData: any) {
-    this.itemPreview = formData;
-  }
-
-  handleOnSuccess(bool) {
-    if (bool) {
+  handleOnSuccess(event) {
+    if (event && event !== 'D') {
       this.updateCategory = true;
       this.close();
+    } else if (event == 'D') {
+      this.deleteItem();
     }
   }
 
+  deleteItem() {
+    const dialogConfig: MatDialogConfig = {
+      data: {
+        message: 'Eliminare prodotto? ',
+        description:
+          'Il prodotto verrà rimosso definitivamente dalla categoria.',
+        actionButton: 'delete',
+      },
+    };
+
+    let dialog = this.core.openDialog(DialogBoxComponent, dialogConfig);
+    dialog.afterClosed().subscribe((result) => {
+      if (result && result.submit) {
+        this.subscribe = this.categoryService
+          .deleteItemFromCategory(this.itemId, this.idCategory)
+          .subscribe({
+            next: (val) => {
+              this.updateCategory = true;
+              this.close();
+            },
+            error: (err) => {
+              console.log(err);
+            },
+          });
+      }
+    });
+  }
+
+  // UTILIS FUNCTION
   async resizeImage(
     file: File,
     maxWidth: number,
@@ -147,6 +177,12 @@ export class ItemEditComponent implements OnInit {
         resolve(blob);
       }, file.type);
     });
+  }
+
+  ngOnDestroy() {
+    if (this.subscribe) {
+      this.subscribe.unsubscribe();
+    }
   }
 }
 //

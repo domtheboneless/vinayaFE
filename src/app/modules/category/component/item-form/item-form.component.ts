@@ -17,6 +17,7 @@ export class ItemFormComponent implements OnInit {
 
   @Output() formSubmitted: EventEmitter<any> = new EventEmitter<any>();
   @Output() onSubmitSuccess: EventEmitter<any> = new EventEmitter<any>();
+  @Output() onDelete: EventEmitter<any> = new EventEmitter<any>();
 
   itemForm: FormGroup;
 
@@ -95,7 +96,7 @@ export class ItemFormComponent implements OnInit {
   }
 
   removeItem() {
-    console.log(this.item);
+    this.onSubmitSuccess.emit('D');
   }
 
   ngOnDestroy() {

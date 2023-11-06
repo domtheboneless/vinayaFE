@@ -1,14 +1,14 @@
 <div class="w-100 v-white-background d-flex justify-content-center flex-column align-items-center p-4"
-  style="width: 80vw !important; border-radius: 50px 0px;">
+  style="width: 80vw !important; border-radius: 50px">
 
   <p class="v-dark-text text-center mb-0 v-primary-text "> {{message}} </p>
   <small class=" text-center fw-small">{{description}}</small>
   <div class="d-flex justify-content-center mt-4 flex-column align-items-center">
     <div class="">
-      <button class="btn  v-button v-border-50" (click)="onSubmit()">{{actionButton}}</button>
+      <button class="  v-button v-border-50" (click)="onSubmit()">{{actionButton}}</button>
     </div>
-    <div class=" mt-3">
-      <span class="btn  v-shadow v-border-50" type="" style="color: black !important;"
+    <div class=" mt-3 mb-2">
+      <span class="v-button-cancel  v-shadow v-border-50" type="" style="color: black !important;"
         (click)="onCancel()">Cancel</span>
     </div>
 

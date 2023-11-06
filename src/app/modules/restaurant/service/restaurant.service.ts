@@ -34,12 +34,8 @@ export class RestaurantService {
     idCategory
   ): Observable<Restaurant> {
     this.core.showLoading();
+    const options = this.headers();
 
-    const bearer = localStorage.getItem('currentUser').replaceAll('"', '');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${bearer}`,
-    });
-    const options = { headers };
     const body = new FormData();
     body.append('menu', idCategory);
 
@@ -54,5 +50,31 @@ export class RestaurantService {
           this.core.hideLoading();
         })
       );
+  }
+
+  editProfile(body, idRestaurant): Observable<Restaurant> {
+    this.core.showLoading();
+    const options = this.headers();
+
+    return this.http
+      .put<Restaurant>(
+        this.serverURL + 'edit_profile/' + idRestaurant,
+        body,
+        options
+      )
+      .pipe(
+        finalize(() => {
+          this.core.hideLoading();
+        })
+      );
+  }
+
+  private headers() {
+    const bearer = localStorage.getItem('currentUser').replaceAll('"', '');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${bearer}`,
+    });
+    const options = { headers };
+    return options;
   }
 }

@@ -24,6 +24,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTreeModule } from '@angular/material/tree';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 // Material Buttons & Indicators
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -83,6 +84,7 @@ import { MatTableModule } from '@angular/material/table';
     MatSortModule,
     MatTableModule,
     MatNativeDateModule,
+    DragDropModule,
   ],
   exports: [
     MatAutocompleteModule,
@@ -121,6 +123,7 @@ import { MatTableModule } from '@angular/material/table';
     MatSortModule,
     MatTableModule,
     MatNativeDateModule,
+    DragDropModule,
   ],
   providers: [],
 })

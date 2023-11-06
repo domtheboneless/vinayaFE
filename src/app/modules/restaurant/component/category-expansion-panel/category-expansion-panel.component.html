@@ -1,9 +1,8 @@
-<mat-expansion-panel [id]="category.name" *ngIf="category" [expanded]="categoryOpen == category.name"
-  class="v-noshadow " (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+<mat-expansion-panel [id]="category.name | trim" *ngIf="category" [expanded]="categoryOpen == category.name"
+  class="v-noshadow " (opened)="panelOpenState = true" (closed)="panelOpenState = false" [hideToggle]="draggableItem">
   <mat-expansion-panel-header>
-    <mat-panel-title>
-      {{category.name | capitalize}}
-    </mat-panel-title>
+    <mat-panel-title> {{category.name | capitalize}}</mat-panel-title>
+    <mat-icon *ngIf="draggableItem" class="position-absolute" style="right: 16px;">drag_handle</mat-icon>
   </mat-expansion-panel-header>
 
 
