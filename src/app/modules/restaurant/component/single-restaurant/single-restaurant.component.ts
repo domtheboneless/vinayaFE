@@ -8,7 +8,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { RestaurantService } from '../../service/restaurant.service';
 import { Restaurant } from 'src/app/core/models/Restaurant.class';
-import { Observable, forkJoin, of, tap } from 'rxjs';
+import { Observable, Subscription, forkJoin, of, tap } from 'rxjs';
 import { CategoryService } from 'src/app/modules/category/service/category.service';
 import { Category } from 'src/app/core/models/Category.class';
 import { CoreService } from 'src/app/core/services/core/core.service';
@@ -18,14 +18,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import { ItemEditComponent } from 'src/app/modules/category/component/item-edit/item-edit.component';
 import { CreateCategoryComponent } from 'src/app/modules/category/component/create-category/create-category.component';
 import { CacheService } from 'src/app/core/services/cache/cache.service';
-
-import {
-  CdkDrag,
-  CdkDragDrop,
-  CdkDragPlaceholder,
-  CdkDropList,
-  moveItemInArray,
-} from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatAccordion } from '@angular/material/expansion';
 
 @Component({
@@ -34,6 +27,8 @@ import { MatAccordion } from '@angular/material/expansion';
   styleUrls: ['./single-restaurant.component.css'],
 })
 export class SingleRestaurantComponent implements OnInit {
+  showCreateCategory: boolean = false;
+
   isElementFixed = false;
   editModeFixed = false;
   draggableItem = false;
@@ -43,12 +38,14 @@ export class SingleRestaurantComponent implements OnInit {
   restaurant$: Observable<Restaurant>;
   categories$: Observable<Category[]>;
   categoriesArray;
+  private originalCategoriesArray: Category[]; // Dichiarare una variabile per mantenere l'array originale
   currentRestaurant;
   categoryOpen;
   restaurantHolder = false;
-  subscription;
   editMode = false;
   tokenExpired = false;
+
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private activeRoute: ActivatedRoute,
@@ -61,14 +58,18 @@ export class SingleRestaurantComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    setTimeout(() => {
+      this.showCreateCategory = true;
+    }, 500);
+
     this.routeRestaurantId = this.activeRoute.snapshot.params['id'];
     this.restaurant$ = this.restaurantService
       .getRestaurantById(this.routeRestaurantId)
       .pipe(
         tap((restaurant) => {
           this.currentRestaurant = restaurant;
-          this.subscription = this.authService.currentUserInfo$.subscribe(
-            (currentUser) => {
+          this.subscriptions.push(
+            this.authService.currentUserInfo$.subscribe((currentUser) => {
               this.tokenExpired =
                 currentUser.exp < Date.now() / 1000 ? true : false;
               if (
@@ -77,7 +78,7 @@ export class SingleRestaurantComponent implements OnInit {
               ) {
                 this.restaurantHolder = true;
               }
-            }
+            })
           );
           let cache = this.cacheService.get(this.routeRestaurantId);
           if (
@@ -86,6 +87,8 @@ export class SingleRestaurantComponent implements OnInit {
             cache.category
           ) {
             this.categories$ = cache.category;
+            this.originalCategoriesArray = [...cache.categoryArray];
+            this.categoriesArray = [...cache.categoryArray];
           } else {
             this.getCategoryByRestaurant();
           }
@@ -93,14 +96,27 @@ export class SingleRestaurantComponent implements OnInit {
       );
   }
 
-  updateOrderProperty(): void {
-    const jsonObject = { menu: this.categoriesArray };
+  generateQR() {
+    const QR = this.restaurantService.generateQR('dddddd').subscribe((qr) => {
+      console.log(qr);
+    });
+  }
 
-    setTimeout(() => {
-      this.restaurantService
-        .editProfile(jsonObject, this.routeRestaurantId)
-        .subscribe();
-    }, 1000);
+  updateOrderProperty(): void {
+    if (
+      !this.arraysAreEqual(this.originalCategoriesArray, this.categoriesArray)
+    ) {
+      const jsonObject = { menu: this.categoriesArray };
+      console.log(jsonObject);
+
+      this.subscriptions.push(
+        this.restaurantService
+          .editProfile(jsonObject, this.routeRestaurantId)
+          .subscribe()
+      );
+      this.originalCategoriesArray = [...this.categoriesArray];
+      this.updateCacheWithCategories(this.categoriesArray);
+    }
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -127,6 +143,7 @@ export class SingleRestaurantComponent implements OnInit {
       onOff = ' attiva';
     } else {
       onOff = ' disattiva';
+      this.draggableItem = false;
     }
   }
 
@@ -166,26 +183,32 @@ export class SingleRestaurantComponent implements OnInit {
       dialog = this.coreService.openDialog(ItemDetailComponent, dialogConfig);
     }
 
-    dialog.afterClosed().subscribe((result) => {
-      if (result && result.updateCategory) {
-        const categoryId = result.idCategory;
-        this.updateCategory(categoryId);
-        this.categoryOpen = category.name;
-      }
-    });
+    this.subscriptions.push(
+      dialog.afterClosed().subscribe((result) => {
+        if (result && result.updateCategory) {
+          const categoryId = result.idCategory;
+          this.updateCategory(categoryId);
+          this.categoryOpen = category.name;
+        }
+      })
+    );
   }
 
   createCategory() {
+    this.editMode = true;
     const dialogConfig = this.createDialogConfig({ editing: false });
     let dialog = this.coreService.openDialog(
       CreateCategoryComponent,
       dialogConfig
     );
-    dialog.afterClosed().subscribe((result) => {
-      if (result && result.created) {
-        this.getCategoryByRestaurant();
-      }
-    });
+
+    this.subscriptions.push(
+      dialog.afterClosed().subscribe((result) => {
+        if (result && result.created) {
+          this.getCategoryByRestaurant();
+        }
+      })
+    );
   }
 
   editCategoryHandler(event) {
@@ -202,14 +225,20 @@ export class SingleRestaurantComponent implements OnInit {
       dialogConfig
     );
 
-    dialog.afterClosed().subscribe((result) => {
-      if (result && result.edit) {
-        const categoryId = result.idCategory;
-        this.updateCategory(categoryId);
-      } else if (result && result.deleted) {
-        this.getCategoryByRestaurant();
-      }
-    });
+    this.subscriptions.push(
+      dialog.afterClosed().subscribe((result) => {
+        if (result && result.edit) {
+          const categoryId = result.idCategory;
+          this.updateCategory(categoryId);
+        } else if (result && result.deleted) {
+          this.getCategoryByRestaurant();
+        }
+      })
+    );
+  }
+
+  hasInactiveCategories(categories: Category[]): boolean {
+    return categories.some((category) => !category.active);
   }
 
   addNewProductHandler(event) {
@@ -225,12 +254,14 @@ export class SingleRestaurantComponent implements OnInit {
 
     let dialog = this.coreService.openDialog(ItemEditComponent, dialogConfig);
 
-    dialog.afterClosed().subscribe((result) => {
-      if (result && result.updateCategory) {
-        const categoryId = result.idCategory;
-        this.updateCategory(categoryId);
-      }
-    });
+    this.subscriptions.push(
+      dialog.afterClosed().subscribe((result) => {
+        if (result && result.updateCategory) {
+          const categoryId = result.idCategory;
+          this.updateCategory(categoryId);
+        }
+      })
+    );
   }
 
   private createDialogConfig(...data: any[]): MatDialogConfig {
@@ -243,53 +274,110 @@ export class SingleRestaurantComponent implements OnInit {
 
   updateCategory(id) {
     this.cacheService.clear();
-    this.categoryService.getCategoryById(id).subscribe((updatedCategory) => {
-      this.categories$.subscribe((categories) => {
-        const updatedCategories = categories.map((category) => {
-          if (category._id === id) {
-            return updatedCategory;
-          } else {
-            return category;
+
+    this.subscriptions.push(
+      this.categoryService.getCategoryById(id).subscribe((updatedCategory) => {
+        this.categories$.subscribe((categories) => {
+          const updatedCategories = categories.map((category) => {
+            if (category._id === id) {
+              return updatedCategory;
+            } else {
+              return category;
+            }
+          });
+          this.categories$ = of(updatedCategories);
+          this.categoriesArray = updatedCategories;
+          if (!updatedCategory.restaurantId.includes(this.routeRestaurantId)) {
+            this.getCategoryByRestaurant();
           }
+          this.updateCacheWithCategories(updatedCategories);
         });
-        this.categories$ = of(updatedCategories);
-        if (!updatedCategory.restaurantId.includes(this.routeRestaurantId)) {
-          this.getCategoryByRestaurant();
-        }
-        this.updateCacheWithCategories(updatedCategories);
-      });
-    });
+      })
+    );
   }
 
   getCategoryByRestaurant() {
-    this.subscription = this.restaurantService
-      .getRestaurantById(this.routeRestaurantId)
-      .pipe(
-        tap((restaurant) => {
-          this.restaurant$ = of(restaurant);
-          const categoryObservables = restaurant.menu.map((category) => {
-            return this.categoryService.getCategoryById(category);
-          });
-          forkJoin(categoryObservables).subscribe((categories) => {
-            this.categoriesArray = categories;
-            this.updateCacheWithCategories(categories);
-          });
-        })
-      )
-      .subscribe();
+    this.subscriptions.push(
+      this.restaurantService
+        .getRestaurantById(this.routeRestaurantId)
+        .pipe(
+          tap((restaurant) => {
+            this.restaurant$ = of(restaurant);
+            const categoryObservables = restaurant.menu.map((category) => {
+              return this.categoryService.getCategoryById(category);
+            });
+            if (restaurant.menu.length == 0) {
+              this.categories$ = of(null);
+            } else {
+              this.subscriptions.push(
+                forkJoin(categoryObservables).subscribe((categories) => {
+                  this.categoriesArray = categories;
+                  this.originalCategoriesArray = [...this.categoriesArray];
+                  this.updateCacheWithCategories(categories);
+                })
+              );
+            }
+          })
+        )
+        .subscribe()
+    );
+  }
+
+  goToEdit() {
+    this.coreService.goTo(`restaurant/edit/${this.routeRestaurantId}`);
+  }
+
+  uploadImgItem(file, imageType) {
+    if (
+      file.target.files[0].type == 'image/png' ||
+      file.target.files[0].type == 'image/jpeg' ||
+      file.target.files[0].type == 'image/jpg'
+    ) {
+      this.subscriptions.push(
+        this.restaurantService
+          .uploadImage(file, this.routeRestaurantId, imageType)
+          .subscribe({
+            next: (val) => {
+              this.restaurant$ = this.restaurantService.getRestaurantById(
+                this.routeRestaurantId
+              );
+            },
+          })
+      );
+    } else {
+      this.coreService.snackBar(
+        'Not supported image',
+        'Try again',
+        'v-snack-bar-bg-danger'
+      );
+    }
   }
 
   private updateCacheWithCategories(categories: Category[]): void {
     this.cacheService.set(this.routeRestaurantId, {
       category: of(categories),
       idRest: this.routeRestaurantId,
+      categoryArray: categories,
     });
     this.categories$ = of(categories);
   }
 
-  ngOnDestroy() {
-    console.log('unsub');
+  // Funzione per confrontare due array
+  private arraysAreEqual(arr1: any[], arr2: any[]): boolean {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-    this.subscription.unsubscribe();
+  ngOnDestroy() {
+    this.subscriptions.forEach((subscription) => {
+      subscription.unsubscribe();
+    });
   }
 }

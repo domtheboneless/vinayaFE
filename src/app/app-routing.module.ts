@@ -13,7 +13,7 @@ const routes: Routes = [
     canActivate: [AuthGuardService],
   },
   {
-    path: 'restaurant/:id',
+    path: 'restaurant',
     loadChildren: () =>
       import('./modules/restaurant/restaurant.module').then(
         (m) => m.RestaurantModule

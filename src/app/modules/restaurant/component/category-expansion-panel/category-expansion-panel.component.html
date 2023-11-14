@@ -16,13 +16,14 @@
         </div>
 
         <div class="col-6 align-self-center">
-          <p class="m-0">{{itemMenu.name | capitalize}} </p>
+          <p class="m-0" style="font-size: medium;">{{itemMenu.name | capitalize}} </p>
           <p class="m-0 fw-light v-font-small">{{itemMenu.desc | slice:0:20 }}<span
               *ngIf="itemMenu.desc.length > 20">...</span></p>
           <p class="m-0"></p>
         </div>
         <div class="col-3 align-self-center px-2">
-          <p class="m-0 text-center v-item-menu-price "> €{{itemMenu.price}}</p>
+          <p class="m-0 text-center v-item-menu-price "> € <span class="v-price-integer">{{itemMenu.price |
+              integer}}</span><span class="v-price-decimal">{{itemMenu.price | decimal}}</span> </p>
         </div>
       </div>
     </div>
@@ -45,7 +46,7 @@
           <p class="m-0"></p>
         </div>
         <div class="col-3 align-self-center px-2">
-          <p class="m-0 text-center v-item-menu-price v-not-available"> €{{itemMenu.price}}</p>
+          <p class="m-0 text-center v-item-menu-price v-not-available"> €{{itemMenu.price | price}}</p>
         </div>
       </div>
 
@@ -64,7 +65,7 @@
         <p class="m-0"></p>
       </div>
       <div class="col-3 align-self-center px-2 ">
-        <p class="m-0 text-center v-item-menu-price v-edit-background"> Add</p>
+        <!-- <p class="m-0 text-center v-item-menu-price v-edit-background"> Add</p> -->
       </div>
     </div>
   </div>

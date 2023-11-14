@@ -19,6 +19,8 @@ import { CacheService } from 'src/app/core/services/cache/cache.service';
   styleUrls: ['./user.component.css'],
 })
 export class UserComponent implements OnInit {
+  showCreateCategory: boolean = false;
+
   current;
   urlID;
   decode;
@@ -39,6 +41,10 @@ export class UserComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => {
+      this.showCreateCategory = true;
+    }, 100); // Ritardo di 2 secondi
+
     this.urlID = this.route.snapshot.params['username'];
     this.current = this.authService.currentUser.subscribe((user) => {
       if (user) {

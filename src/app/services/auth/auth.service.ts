@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable, finalize, map, tap } from 'rxjs';
 import { CoreService } from 'src/app/core/services/core/core.service';
 import jwt_decode from 'jwt-decode';
 import { environment } from 'src/environments/environment.development';
+import { CacheService } from 'src/app/core/services/cache/cache.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +23,11 @@ export class AuthService {
   private decode;
   private payLoad;
 
-  constructor(private coreService: CoreService, private http: HttpClient) {
+  constructor(
+    private coreService: CoreService,
+    private http: HttpClient,
+    private cacheService: CacheService
+  ) {
     this.currentUserSubject = new BehaviorSubject<any>(
       JSON.parse(localStorage.getItem('currentUser'))
     );
@@ -64,6 +69,7 @@ export class AuthService {
   }
 
   logout() {
+    this.cacheService.clear();
     localStorage.clear();
     this.currentUserSubject.next(null);
     this.currentUserInfo.next(null);

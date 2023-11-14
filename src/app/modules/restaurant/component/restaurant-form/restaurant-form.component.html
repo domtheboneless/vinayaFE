@@ -1,0 +1,140 @@
+<!-- <form [formGroup]="restaurantForm" (ngSubmit)="onSubmit()" class="mt-1">
+  <div class="w-100 mx-0">
+    <mat-form-field class="w-100">
+      <mat-label>Nome</mat-label>
+      <input matInput placeholder="Name" formControlName="name">
+      <mat-error *ngIf="restaurantForm.get('name').hasError('required')">* Name is required</mat-error>
+    </mat-form-field>
+  </div>
+  <div class="w-100 mx-0">
+    <mat-form-field class="w-100">
+      <mat-label>Descrizione</mat-label>
+      <input matInput placeholder="Description" formControlName="description">
+      <mat-error *ngIf="restaurantForm.get('description').hasError('required')">* Description is required</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="d-flex w-100 px-1">
+    <div class="w-75">
+      <mat-form-field class="w-100">
+        <mat-label>Address</mat-label>
+        <input matInput placeholder="" formControlName="address">
+      </mat-form-field>
+    </div>
+    <div class="w-25 pr-4">
+      <mat-form-field class="w-100">
+        <mat-label>Number</mat-label>
+        <input matInput placeholder="" formControlName="addressNum">
+      </mat-form-field>
+    </div>
+  </div>
+
+
+
+  <div class="w-100">
+    <mat-form-field class="w-100">
+      <mat-label>e-mail</mat-label>
+      <input matInput placeholder="" formControlName="email">
+    </mat-form-field>
+  </div>
+
+  <div class="w-100">
+    <mat-form-field class="w-100">
+      <mat-label>Cell</mat-label>
+      <input matInput placeholder="" formControlName="cell">
+    </mat-form-field>
+  </div>
+
+  <div class="w-100">
+    <mat-form-field class="w-100">
+      <mat-label>P. Iva</mat-label>
+      <input matInput placeholder="" formControlName="pIva">
+    </mat-form-field>
+  </div>
+
+  <div class="d-flex justify-content-center mt-4 mb-4 flex-column align-items-center">
+    <button class="btn col-3 v-button v-border-50"
+      [class.v-button-disabled]="!restaurantForm.dirty || restaurantForm.invalid" type="submit">Submit</button>
+    <div class="col-3 v-small v-shadow text-center v-border-50 v-border-1px-solid mt-3" style="padding: .5rem;">
+      <span class="v-letterspace-2px" (click)="onCancel()">BACK</span>
+    </div>
+
+  </div>
+</form> -->
+
+
+
+
+<form [formGroup]="restaurantForm" (ngSubmit)="onSubmit()" class="mt-1">
+  <!-- Prima riga con due input in col-12 -->
+  <div class="row mx-0 ps-2">
+    <div class="col-12 px-0">
+      <mat-form-field class="d-block">
+        <mat-label>Nome</mat-label>
+        <input matInput placeholder="Nome" formControlName="name">
+        <mat-error *ngIf="restaurantForm.get('name').hasError('required')">* Il nome è obbligatorio</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-12 mt-2 px-0">
+      <mat-form-field class="d-block ">
+        <mat-label>Descrizione</mat-label>
+        <input matInput placeholder="Descrizione" formControlName="description">
+        <mat-error *ngIf="restaurantForm.get('description').hasError('required')">* La descrizione è
+          obbligatoria</mat-error>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="row mx-0 ps-2">
+    <div class="col-8 px-0">
+      <mat-form-field class="d-block">
+        <mat-label>Indirizzo</mat-label>
+        <input matInput placeholder="Indirizzo" formControlName="address">
+      </mat-form-field>
+    </div>
+    <div class="col-4" style="padding-left: 0; padding-right: 1.5em;">
+      <mat-form-field class="d-block">
+        <mat-label>Numero</mat-label>
+        <input matInput type="number" placeholder="Numero" formControlName="addressNum">
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="row mx-0 ps-2">
+    <div class="col-12 px-0">
+      <mat-form-field class="d-block">
+        <mat-label>e-mail</mat-label>
+        <input matInput placeholder="" formControlName="email">
+      </mat-form-field>
+    </div>
+    <div class="col-12 mt-2 px-0">
+      <mat-form-field class="d-block ">
+        <mat-label>Cell</mat-label>
+        <input matInput type="number" placeholder="" formControlName="cell">
+      </mat-form-field>
+    </div>
+    <div class="col-12 mt-2 px-0">
+      <mat-form-field class="d-block ">
+        <mat-label>P. Iva</mat-label>
+        <input matInput type="number" placeholder="" formControlName="pIva">
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="col-12 d-flex align-self-end ps-2 mt-2 mb-5">
+    <p class="m-0 mr-2" style="margin-right: 1rem !important;">Ristorante attivo </p>
+    <label class="switch align-self-center">
+      <input type="checkbox" formControlName="status">
+      <span class="slider round"></span>
+    </label>
+  </div>
+  <!-- Altri campi del modulo -->
+
+  <div class="d-flex justify-content-center mt-4 mb-4 flex-column align-items-center">
+    <button class="btn col-3 v-button v-border-50 v-letterspace-2px"
+      [class.v-button-disabled]="!restaurantForm.dirty || restaurantForm.invalid" type="submit">Salva</button>
+    <div class="col-3 v-small v-shadow text-center v-border-50 v-border-1px-solid mt-3" style="padding: .5rem;">
+      <span class="v-letterspace-2px" (click)="onCancel()">BACK</span>
+    </div>
+  </div>
+</form>

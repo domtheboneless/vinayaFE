@@ -7,14 +7,25 @@ import { MaterialModule } from 'src/app/core/modules/material.module';
 import { ItemDetailComponent } from '../category/component/item-detail/item-detail.component';
 import { SharedModule } from '../shared/shared/shared.module';
 import { CategoryExpansionPanelComponent } from './component/category-expansion-panel/category-expansion-panel.component';
+import { EditRestaurantComponent } from './component/edit-restaurant/edit-restaurant.component';
+import { RestaurantFormComponent } from './component/restaurant-form/restaurant-form.component';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [SingleRestaurantComponent, ItemDetailComponent, CategoryExpansionPanelComponent],
+  declarations: [
+    SingleRestaurantComponent,
+    ItemDetailComponent,
+    CategoryExpansionPanelComponent,
+    EditRestaurantComponent,
+    RestaurantFormComponent,
+  ],
   imports: [
     CommonModule,
     RestaurantRoutingModule,
     MaterialModule,
     SharedModule,
+    ReactiveFormsModule,
+    FormsModule,
   ],
 })
 export class RestaurantModule {}

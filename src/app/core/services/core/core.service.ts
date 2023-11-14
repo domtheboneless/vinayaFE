@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { NavigationExtras, Router, UrlTree } from '@angular/router';
+import {
+  NavigationBehaviorOptions,
+  NavigationExtras,
+  Router,
+  UrlTree,
+} from '@angular/router';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import {
   MatSnackBar,

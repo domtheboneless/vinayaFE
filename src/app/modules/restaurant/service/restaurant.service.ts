@@ -69,6 +69,41 @@ export class RestaurantService {
       );
   }
 
+  uploadImage(file, idRestaurant, imageType): Observable<any> {
+    this.core.showLoading();
+    const options = this.headers();
+
+    let bucket;
+    if (imageType && imageType == 'cover') {
+      bucket = 'vinaya-coverimg-restaurants';
+    } else if (imageType && imageType == 'logo') {
+      bucket = 'vinaya-restaurants-logo';
+    }
+
+    const body = new FormData();
+    body.append('file', file.target.files[0]);
+    body.append('bucket', bucket);
+    body.append('imageType', imageType);
+
+    return this.http
+      .put(
+        this.serverURL + 'uploadImageOnBucket/' + idRestaurant,
+        body,
+        options
+      )
+      .pipe(
+        finalize(() => {
+          this.core.hideLoading();
+        })
+      );
+  }
+
+  generateQR(data) {
+    return this.http.get(
+      'https://api.qrserver.com/v1/create-qr-code/?data=' + data
+    );
+  }
+
   private headers() {
     const bearer = localStorage.getItem('currentUser').replaceAll('"', '');
     const headers = new HttpHeaders({
