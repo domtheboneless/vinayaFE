@@ -20,6 +20,7 @@ import { CreateCategoryComponent } from 'src/app/modules/category/component/crea
 import { CacheService } from 'src/app/core/services/cache/cache.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatAccordion } from '@angular/material/expansion';
+import { QrCodeDialogComponent } from '../qr-code-dialog/qr-code-dialog.component';
 
 @Component({
   selector: 'app-single-restaurant',
@@ -61,7 +62,6 @@ export class SingleRestaurantComponent implements OnInit {
     setTimeout(() => {
       this.showCreateCategory = true;
     }, 500);
-
     this.routeRestaurantId = this.activeRoute.snapshot.params['id'];
     this.restaurant$ = this.restaurantService
       .getRestaurantById(this.routeRestaurantId)
@@ -97,9 +97,10 @@ export class SingleRestaurantComponent implements OnInit {
   }
 
   generateQR() {
-    const QR = this.restaurantService.generateQR('dddddd').subscribe((qr) => {
-      console.log(qr);
+    const dialogConfig = this.createDialogConfig({
+      restaurantID: this.routeRestaurantId,
     });
+    this.coreService.openDialog(QrCodeDialogComponent, dialogConfig);
   }
 
   updateOrderProperty(): void {

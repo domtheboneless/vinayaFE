@@ -97,13 +97,6 @@ export class RestaurantService {
         })
       );
   }
-
-  generateQR(data) {
-    return this.http.get(
-      'https://api.qrserver.com/v1/create-qr-code/?data=' + data
-    );
-  }
-
   private headers() {
     const bearer = localStorage.getItem('currentUser').replaceAll('"', '');
     const headers = new HttpHeaders({

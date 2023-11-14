@@ -773,6 +773,14 @@ mat-label {
 }
 
 /* RESTAURANT PAGE */
+
+.v-qr-code-bg {
+  width: 95vw;
+  height: 64.5vh;
+  background: url("../src/assets/images/core/qrcodebg.png");
+  background-repeat: no-repeat;
+  background-position: center;
+}
 .v-restaurant-header {
   height: 40vh;
   width: 100% !important;

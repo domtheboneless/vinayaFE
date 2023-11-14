@@ -10,7 +10,8 @@ import { CategoryExpansionPanelComponent } from './component/category-expansion-
 import { EditRestaurantComponent } from './component/edit-restaurant/edit-restaurant.component';
 import { RestaurantFormComponent } from './component/restaurant-form/restaurant-form.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-
+import { QRCodeModule } from 'angularx-qrcode';
+import { QrCodeDialogComponent } from './component/qr-code-dialog/qr-code-dialog.component';
 @NgModule({
   declarations: [
     SingleRestaurantComponent,
@@ -18,6 +19,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
     CategoryExpansionPanelComponent,
     EditRestaurantComponent,
     RestaurantFormComponent,
+    QrCodeDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -26,6 +28,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
     SharedModule,
     ReactiveFormsModule,
     FormsModule,
+    QRCodeModule,
   ],
 })
 export class RestaurantModule {}
