@@ -69,6 +69,19 @@ export class RestaurantService {
       );
   }
 
+  createRestaurant(body) {
+    this.core.showLoading();
+    const options = this.headers();
+
+    return this.http
+      .post<Restaurant>(this.serverURL + 'new', body, options)
+      .pipe(
+        finalize(() => {
+          this.core.hideLoading();
+        })
+      );
+  }
+
   uploadImage(file, idRestaurant, imageType): Observable<any> {
     this.core.showLoading();
     const options = this.headers();

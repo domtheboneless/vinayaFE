@@ -132,6 +132,10 @@ export class UserComponent implements OnInit {
     this.core.goTo('/restaurant/' + restaurant._id);
   }
 
+  newRest() {
+    this.core.goTo('/restaurant/manager/new');
+  }
+
   ngOnDestroy() {
     this.current.unsubscribe();
   }

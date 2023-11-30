@@ -1,9 +1,16 @@
 <div class="v-custom-container" *ngIf="restaurant$ | async as restaurant">
-  <div class="d-flex flex-wrap v-restaurant-header justify-content-center align-items-center"
+  <app-restaurant-header-cover-logo [restaurant]="restaurant" [restaurantHolder]="restaurantHolder"
+    [routeRestaurantId]="routeRestaurantId" [tokenExpired]="tokenExpired" [tooltip]="tooltip" [morevert]="true"
+    (containerHeightEmitter)="containerHeightEmitter($event)"
+    (actionEmitter)="actionHandler($event)"></app-restaurant-header-cover-logo>
+  <!-- <div (load)="getBackgroundDivHeight()"
+    class="d-flex flex-wrap v-restaurant-header justify-content-center align-items-center"
     [ngStyle]="{ 'background-image': 'url(' + restaurant.profile?.coverImg + ')' }">
-    <button *ngIf="restaurantHolder" mat-icon-button class="v-menu-edit-restaurant"
+    <img class="d-none" [src]="restaurant.profile?.coverImg" alt="" (load)="getBackgroundDivHeight()">
+    <button (click)="tooltip = false" *ngIf="restaurantHolder" mat-icon-button class="v-menu-edit-restaurant"
       [matMenuTriggerFor]="innerMenuSettings" aria-label="Edit restaurant profile">
-      <mat-icon>more_vert</mat-icon>
+      <mat-icon class="position-relative">more_vert</mat-icon>
+      <span *ngIf="tooltip" class="v-more-vert-tooltip">Scopri gli strumenti</span>
     </button>
     <mat-menu #innerMenuSettings="matMenu" class="innerMenuSettings" xPosition="before">
       <button mat-menu-item (click)="goToEdit()">
@@ -34,7 +41,7 @@
     <img class="v-restaurant-logourl" [src]="restaurant.profile.logoUrl" alt="">
     <p class="w-100 text-white text-center v-title-after-img m-0 mt-3">{{restaurant.profile.name}}</p>
     <span class=" v-desc-after-img">{{restaurant.profile.description}}</span>
-  </div>
+  </div> -->
   <div class="d-flex w-100 justify-content-center ">
     <button class="btn w-100 v-button-full-width v-edit-background" *ngIf="restaurantHolder" (click)="editModeToggle()"
       style="border-radius: 0 !important;">Edit menu</button>
@@ -42,7 +49,7 @@
   <ng-container *ngIf="categories$ | async as categories; else emptyCategory">
     <div class="d-flex flex-wrap v-restaurant-body pb-3">
       <h2 class="w-100 px-3 pt-3 pb-0 mb-0">Le novità</h2>
-      <div class="v-container-carousel v-container-carousel-background mt-3 mb-3 ps-3 py-3">
+      <div class="v-container-carousel v-container-carousel-background mt-3 mb-3 ps-3 py-3 w-100">
         <div *ngFor="let category of categories" class=" d-flex "
           (click)="openItem(category.items[category.items.length - 1]._id, category)">
           <div class="v-restaurant-item-novita"
@@ -91,7 +98,7 @@
       </div>
 
       <ng-container *ngIf="restaurantHolder && hasInactiveCategories(categories)">
-        <span class="w-100 px-3 pt-3 pb-0 mb-0 d-flex">Categorie non attive</span>
+        <h2 class="w-100 px-3 pt-3 pb-0 mb-0 d-flex">Categorie non attive</h2>
         <ng-container *ngFor="let category of categories">
           <mat-accordion class="mt-3 w-100" *ngIf="!category.active">
             <app-category-expansion-panel [category]="category" [categoryOpen]="categoryOpen" [editMode]="editMode"
@@ -105,12 +112,13 @@
   </ng-container>
 
   <ng-template #emptyCategory>
-    <div class="d-flex justify-content-center align-items-center v-white-background"
-      style="height: calc(100vh - 435px);">
+    <div class="d-flex justify-content-center align-items-center v-white-background xxx"
+      [style.height]="containerHeight">
 
       <div class="d-flex flex-column justify-content-center align-items-center"
         [ngClass]="{'fade-in-out': true, 'show': showCreateCategory}">
-        <i class="material-icons" style="font-size: xx-large;">fastfood</i>
+        <i class="material-icons position-relative" style="font-size: xx-large;">fastfood</i>
+        <span class="v-more-vert-tooltip">Scopri gli strumenti</span>
         <h3 class="mb-3 mt-3">Inizia a creare il tuo menu</h3>
         <!-- <div class="d-flex justify-content-center align-items-center"> -->
         <button *ngIf="restaurantHolder" class="btn col-3 v-button v-border-50 v-letterspace-2px w-75 v-edit-background"

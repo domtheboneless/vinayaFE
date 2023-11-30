@@ -16,7 +16,7 @@ export class RestaurantFormComponent implements OnInit {
 
   ngOnInit() {
     this.restaurantForm = this._fb.group({
-      username: ['', Validators.required],
+      username: ['placeholder', Validators.required],
       name: ['', Validators.required],
       address: [''],
       addressNum: [0],
@@ -24,7 +24,7 @@ export class RestaurantFormComponent implements OnInit {
       description: ['', Validators.required],
       email: [''],
       cell: [0],
-      pIva: [0, Validators.required],
+      pIva: ['', Validators.required],
       rating: [5],
       status: [true, Validators.required],
       logoUrl: [''],
@@ -32,6 +32,8 @@ export class RestaurantFormComponent implements OnInit {
     });
 
     if (this.currentRestaurant) {
+      console.log(this.currentRestaurant);
+
       this.restaurantForm.patchValue({
         username: this.currentRestaurant.profile.username,
         name: this.currentRestaurant.profile.name,
@@ -52,11 +54,19 @@ export class RestaurantFormComponent implements OnInit {
 
   onSubmit() {
     if (this.restaurantForm.valid && this.restaurantForm.dirty) {
-      this.buttonEmitter.emit({
-        status: 'submit',
-        type: 'edit',
-        form: this.restaurantForm,
-      });
+      if (this.currentRestaurant) {
+        this.buttonEmitter.emit({
+          status: 'submit',
+          type: 'edit',
+          form: this.restaurantForm,
+        });
+      } else {
+        this.buttonEmitter.emit({
+          status: 'submit',
+          type: 'new',
+          form: this.restaurantForm,
+        });
+      }
     }
   }
 

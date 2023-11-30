@@ -29,10 +29,6 @@ body {
 .container_custom {
 }
 
-.container-m-height {
-  min-height: calc(100vh - 48px) !important;
-}
-
 .container-m-login {
   min-height: calc(100vh - 136px) !important;
   padding: 2em;
@@ -51,7 +47,17 @@ body {
 }
 /*MENU STYLE*/
 .navbar-toggler-icon {
-  background-image: url("./assets/images/core/Asset_63xWhite.png");
+  /* background-image: url("./assets/images/core/Asset_63xWhite.png"); */
+  background-image: url("./assets/images/core/2048px-Hamburger_icon.png");
+}
+
+.btn-close {
+  background-image: url("./assets/images/core/close-512.png");
+  opacity: 1;
+}
+
+.btn-close:focus {
+  box-shadow: none;
 }
 .navbar-toggler {
   background-color: transparent !important;
@@ -770,9 +776,48 @@ mat-label {
   /* background-color: var(--vinaya-red); */
   background-color: white;
   padding: 1em 0em;
+  /*MOBILE FIX*/
+  min-height: calc(100vh - 490px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* RESTAURANT PAGE */
+
+.v-more-vert-tooltip {
+  position: absolute;
+  left: -86px;
+  background: var(--vinaya-edit-mode-color);
+  font-size: 0.4em;
+  padding: 0.5em;
+  border-radius: 10px;
+  animation: bounce-left 1s infinite;
+}
+
+.v-more-vert-tooltip::after {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  left: 100%; /* To the right of the tooltip */
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent
+    var(--vinaya-edit-mode-color);
+}
+
+@keyframes bounce-left {
+  0% {
+    left: -80px;
+  }
+  50% {
+    left: -86px;
+  }
+  100% {
+    left: -80px;
+  }
+}
 
 .v-qr-code-bg {
   width: 95vw;
@@ -803,7 +848,7 @@ mat-label {
 .v-restaurant-logourl {
   height: 50% !important;
   border-radius: 10px;
-  border: 2px solid var(--vinaya-black);
+  /* border: 2px solid var(--vinaya-black); */
   z-index: 2;
 }
 

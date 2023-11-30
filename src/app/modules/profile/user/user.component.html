@@ -20,7 +20,7 @@
       </div>
       <div class="d-flex w-100 justify-content-center mt-2">
         <div class="col-6">
-          <p class="text-center v-small v-border-right-light-gray v-text-gray">@{{userProfile.profile?.username}}</p>
+          <p class="text-center v-small v-border-right-light-gray v-text-gray">{{userProfile.profile?.username}}</p>
         </div>
         <div class="col-6">
           <p class="text-center v-small v-text-gray">{{userProfile.profile?.role | titlecase}}</p>
@@ -41,7 +41,7 @@
         <p class="v-p-restaurant-carousel">{{restaurant.profile.name}}</p>
         <i class="material-icons v-icon-item-carousel">keyboard_arrow_right</i>
       </div>
-      <div class="v-div-restaurant-carousel w-100 v-item-container-carousel d-flex col-12"
+      <div class="v-div-restaurant-carousel w-100 v-item-container-carousel d-flex col-12" (click)="newRest()"
         style="background-image:url('https://endlessicons.com/wp-content/uploads/2012/12/add-icon-614x460.png')">
         <p class="v-p-restaurant-carousel">Add new restaurant</p>
       </div>

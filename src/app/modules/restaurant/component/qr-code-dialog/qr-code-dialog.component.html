@@ -1,3 +1,16 @@
-<div class="d-flex v-primary-background v-qr-code-bg justify-content-center align-items-center">
+<div #componentContainer
+  class="d-flex flex-column v-primary-background v-qr-code-bg justify-content-center align-items-center position-relative">
+  <h2 class="mb-0 ">Scopri il menu</h2>
+
   <qrcode [qrdata]="url" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+  <div style="width: 346px; display: contents;">
+    <img class="img-fluid" style="    position: absolute;
+    bottom: 10px;
+    width: 185px" src="../../../../../assets/images/core/Asset_113x.png" alt="">
+  </div>
+
+</div>
+
+<div class="mt-4 v-primary-background d-flex justify-content-center v-border-50">
+  <button class="btn" (click)="captureComponent()">Scarica come JPG</button>
 </div>

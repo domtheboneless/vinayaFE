@@ -19,9 +19,7 @@ export class AuthService {
   private currentUserInfo = new BehaviorSubject<any>(null);
   public currentUserInfo$ = this.currentUserInfo.asObservable();
 
-  private current;
   private decode;
-  private payLoad;
 
   constructor(
     private coreService: CoreService,

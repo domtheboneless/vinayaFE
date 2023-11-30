@@ -25,6 +25,7 @@
     "angularx-qrcode": "^16.0.2",
     "bootstrap": "^5.3.1",
     "dotenv": "^16.3.1",
+    "html2canvas": "^1.4.1",
     "jwt-decode": "^3.1.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

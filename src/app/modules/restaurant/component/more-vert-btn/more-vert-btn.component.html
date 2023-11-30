@@ -1,0 +1,31 @@
+<button (click)="tooltip = false" *ngIf="restaurantHolder" mat-icon-button class="v-menu-edit-restaurant"
+  [matMenuTriggerFor]="innerMenuSettings" aria-label="Edit restaurant profile">
+  <mat-icon class="position-relative">more_vert</mat-icon>
+  <span *ngIf="tooltip" class="v-more-vert-tooltip">Scopri gli strumenti</span>
+</button>
+<mat-menu #innerMenuSettings="matMenu" class="innerMenuSettings" xPosition="before">
+  <button mat-menu-item (click)="goToEdit()">
+    <mat-icon>edit_note</mat-icon>
+    <span>Modifica ristorante</span>
+  </button>
+  <button mat-menu-item (click)="editModeToggle()">
+    <mat-icon>menu_book</mat-icon>
+    <span>Modifica menu</span>
+  </button>
+  <mat-divider></mat-divider>
+  <input type="file" #logoFileInput style="display: none;" (change)="uploadImgItem($event, 'logo')">
+  <button mat-menu-item (click)="logoFileInput.click()">
+    <mat-icon>add_a_photo</mat-icon>
+    <span>Cambia logo</span>
+  </button>
+  <input type="file" #coverFileInput style="display: none;" (change)="uploadImgItem($event, 'cover')">
+  <button mat-menu-item (click)="coverFileInput.click()">
+    <mat-icon>photo_size_select_actual</mat-icon>
+    <span>Cambia immagine copertina</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button mat-menu-item (click)="generateQR()">
+    <mat-icon>qr_code_2</mat-icon>
+    <span>Genera QR code</span>
+  </button>
+</mat-menu>

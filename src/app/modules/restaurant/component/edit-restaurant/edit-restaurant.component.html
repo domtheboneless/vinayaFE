@@ -1,29 +1,39 @@
-<div class="v-custom-container" *ngIf="restaurant$ | async as restaurant">
-  <div class="d-flex flex-wrap justify-content-center align-items-center">
+<div class="v-custom-container">
+  <ng-container *ngIf="restaurant$ | async as restaurant">
+    <app-restaurant-header-cover-logo [restaurant]="restaurant" [restaurantHolder]="restaurantHolder"
+      [routeRestaurantId]="routeRestaurantId" [morevert]="false"
+      (actionEmitter)="actionHandler($event)"></app-restaurant-header-cover-logo>
+  </ng-container>
+
+  <!-- <div class="d-flex flex-wrap justify-content-center align-items-center"
+    *ngIf="restaurant$ | async as restaurant; else newRest">
     <div class="d-flex flex-wrap v-restaurant-header justify-content-center align-items-center"
       [ngStyle]="{ 'background-image': 'url(' + restaurant.profile?.coverImg + ')' }">
-      <button *ngIf="restaurantHolder" mat-icon-button class="v-menu-edit-restaurant" [matMenuTriggerFor]="menu"
-        aria-label="Edit restaurant profile">
-        <mat-icon>more_vert</mat-icon>
-      </button>
-      <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="goToEdit()">
-          <mat-icon>mode_edit</mat-icon>
-          <span>Modifica ristorante</span>
-        </button>
-        <button mat-menu-item (click)="editModeToggle()">
-          <mat-icon>menu_book</mat-icon>
-          <span>Modifica menu</span>
-        </button>
-      </mat-menu>
       <img class="v-restaurant-logourl" [src]="restaurant.profile.logoUrl" alt="">
       <p class="w-100 text-white text-center v-title-after-img m-0 mt-3">{{restaurant.profile.name}}</p>
       <span class=" v-desc-after-img">{{restaurant.profile.description}}</span>
     </div>
   </div>
-  <div class="d-flex flex-wrap pb-3 v-white-background">
-    <b class="ps-2 mt-4 m-0">Edit info</b>
-    <app-restaurant-form [currentRestaurant]="currentRestaurant" (buttonEmitter)="buttonEmitterHandler($event)"
-      class="w-100"></app-restaurant-form>
+  <ng-template #newRest>
+    <div class="d-flex flex-wrap justify-content-center align-items-center">
+      <div class="d-flex flex-wrap v-restaurant-header justify-content-center align-items-center"
+        style="background-image: url('../../../../../assets/images/core/backdropsquare.png');">
+        <img class="v-restaurant-logourl" src="../../../../../assets/images/core/backdropsquare.png" alt="">
+        <p class="w-100 text-white text-center v-title-after-img m-0 mt-3"></p>
+        <span class=" v-desc-after-img"></span>
+      </div>
+    </div>
+  </ng-template> -->
+  <div class="d-flex flex-wrap pb-3 v-white-background px-3">
+    <b class="ps-2 mt-4 m-0">Edit info ristorante</b>
+    <ng-container *ngIf="restaurant$ | async as restaurant; else newRestForm">
+      <app-restaurant-form [currentRestaurant]="currentRestaurant" (buttonEmitter)="buttonEmitterHandler($event)"
+        class="w-100"></app-restaurant-form>
+    </ng-container>
+
+    <ng-template #newRestForm>
+      <app-restaurant-form (buttonEmitter)="buttonEmitterHandler($event)" class="w-100"></app-restaurant-form>
+    </ng-template>
   </div>
+
 </div>

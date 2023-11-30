@@ -1,5 +1,6 @@
 import {
   Component,
+  ElementRef,
   HostListener,
   OnInit,
   ViewChild,
@@ -21,6 +22,7 @@ import { CacheService } from 'src/app/core/services/cache/cache.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatAccordion } from '@angular/material/expansion';
 import { QrCodeDialogComponent } from '../qr-code-dialog/qr-code-dialog.component';
+import Utils from '../../../../core/utils/common-function';
 
 @Component({
   selector: 'app-single-restaurant',
@@ -28,8 +30,11 @@ import { QrCodeDialogComponent } from '../qr-code-dialog/qr-code-dialog.componen
   styleUrls: ['./single-restaurant.component.css'],
 })
 export class SingleRestaurantComponent implements OnInit {
+  imgHeigh;
+  containerHeight;
   showCreateCategory: boolean = false;
 
+  tooltip = true;
   isElementFixed = false;
   editModeFixed = false;
   draggableItem = false;
@@ -55,7 +60,8 @@ export class SingleRestaurantComponent implements OnInit {
     private coreService: CoreService,
     private authService: AuthService,
     private cacheService: CacheService,
-    private viewContainerRef: ViewContainerRef
+    private viewContainerRef: ViewContainerRef,
+    private elRef: ElementRef
   ) {}
 
   ngOnInit() {
@@ -86,6 +92,7 @@ export class SingleRestaurantComponent implements OnInit {
             cache.idRest == this.routeRestaurantId &&
             cache.category
           ) {
+            this.tooltip = false;
             this.categories$ = cache.category;
             this.originalCategoriesArray = [...cache.categoryArray];
             this.categoriesArray = [...cache.categoryArray];
@@ -94,6 +101,19 @@ export class SingleRestaurantComponent implements OnInit {
           }
         })
       );
+  }
+
+  // @HostListener('window:resize', ['$event'])
+  // async onResize(event: any) {
+  //   this.containerHeight = this.getBackgroundDivHeight();
+  // }
+
+  async getBackgroundDivHeight() {
+    this.containerHeight = await Utils.getBackgroundDivHeight(
+      '.v-restaurant-header',
+      138.39,
+      this.elRef
+    );
   }
 
   generateQR() {
@@ -105,11 +125,9 @@ export class SingleRestaurantComponent implements OnInit {
 
   updateOrderProperty(): void {
     if (
-      !this.arraysAreEqual(this.originalCategoriesArray, this.categoriesArray)
+      !Utils.arraysAreEqual(this.originalCategoriesArray, this.categoriesArray)
     ) {
       const jsonObject = { menu: this.categoriesArray };
-      console.log(jsonObject);
-
       this.subscriptions.push(
         this.restaurantService
           .editProfile(jsonObject, this.routeRestaurantId)
@@ -273,6 +291,10 @@ export class SingleRestaurantComponent implements OnInit {
     return dialogConfig;
   }
 
+  containerHeightEmitter(event) {
+    this.containerHeight = event;
+  }
+
   updateCategory(id) {
     this.cacheService.clear();
 
@@ -308,8 +330,10 @@ export class SingleRestaurantComponent implements OnInit {
               return this.categoryService.getCategoryById(category);
             });
             if (restaurant.menu.length == 0) {
+              this.tooltip = true;
               this.categories$ = of(null);
             } else {
+              this.tooltip = false;
               this.subscriptions.push(
                 forkJoin(categoryObservables).subscribe((categories) => {
                   this.categoriesArray = categories;
@@ -326,6 +350,16 @@ export class SingleRestaurantComponent implements OnInit {
 
   goToEdit() {
     this.coreService.goTo(`restaurant/edit/${this.routeRestaurantId}`);
+  }
+
+  actionHandler(event) {
+    if (event.type == 'upload') {
+      this.restaurant$ = this.restaurantService.getRestaurantById(
+        this.routeRestaurantId
+      );
+    } else if (event.type == 'editBtn') {
+      this.editModeToggle();
+    }
   }
 
   uploadImgItem(file, imageType) {
@@ -361,19 +395,6 @@ export class SingleRestaurantComponent implements OnInit {
       categoryArray: categories,
     });
     this.categories$ = of(categories);
-  }
-
-  // Funzione per confrontare due array
-  private arraysAreEqual(arr1: any[], arr2: any[]): boolean {
-    if (arr1.length !== arr2.length) {
-      return false;
-    }
-    for (let i = 0; i < arr1.length; i++) {
-      if (arr1[i] !== arr2[i]) {
-        return false;
-      }
-    }
-    return true;
   }
 
   ngOnDestroy() {

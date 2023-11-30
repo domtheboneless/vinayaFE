@@ -46,7 +46,8 @@
           <p class="m-0"></p>
         </div>
         <div class="col-3 align-self-center px-2">
-          <p class="m-0 text-center v-item-menu-price v-not-available"> €{{itemMenu.price | price}}</p>
+          <p class="m-0 text-center v-item-menu-price v-not-available"> € <span>{{itemMenu.price |
+              integer}}</span><span class="v-price-decimal">{{itemMenu.price | decimal}} </span></p>
         </div>
       </div>
 

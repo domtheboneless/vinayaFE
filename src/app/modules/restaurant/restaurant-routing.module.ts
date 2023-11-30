@@ -12,6 +12,11 @@ const routes: Routes = [
     canActivate: [AuthGuardService, RestaurantHolderGuardService],
     component: EditRestaurantComponent,
   },
+  {
+    path: 'manager/new',
+    canActivate: [AuthGuardService],
+    component: EditRestaurantComponent,
+  },
 ];
 
 @NgModule({

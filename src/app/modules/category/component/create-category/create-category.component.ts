@@ -164,8 +164,6 @@ export class CreateCategoryComponent implements OnInit {
   }
 
   onCancel() {
-    console.log('cancel');
-
     if (this.isEdit) {
       this.unsubscribe();
     }
