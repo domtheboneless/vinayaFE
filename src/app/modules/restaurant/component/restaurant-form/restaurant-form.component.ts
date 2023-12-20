@@ -32,8 +32,6 @@ export class RestaurantFormComponent implements OnInit {
     });
 
     if (this.currentRestaurant) {
-      console.log(this.currentRestaurant);
-
       this.restaurantForm.patchValue({
         username: this.currentRestaurant.profile.username,
         name: this.currentRestaurant.profile.name,
@@ -68,6 +66,13 @@ export class RestaurantFormComponent implements OnInit {
         });
       }
     }
+  }
+
+  deleteRestaurant() {
+    this.buttonEmitter.emit({
+      status: 'delete',
+      type: 'delete',
+    });
   }
 
   onCancel() {

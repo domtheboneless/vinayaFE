@@ -3,112 +3,76 @@
     [routeRestaurantId]="routeRestaurantId" [tokenExpired]="tokenExpired" [tooltip]="tooltip" [morevert]="true"
     (containerHeightEmitter)="containerHeightEmitter($event)"
     (actionEmitter)="actionHandler($event)"></app-restaurant-header-cover-logo>
-  <!-- <div (load)="getBackgroundDivHeight()"
-    class="d-flex flex-wrap v-restaurant-header justify-content-center align-items-center"
-    [ngStyle]="{ 'background-image': 'url(' + restaurant.profile?.coverImg + ')' }">
-    <img class="d-none" [src]="restaurant.profile?.coverImg" alt="" (load)="getBackgroundDivHeight()">
-    <button (click)="tooltip = false" *ngIf="restaurantHolder" mat-icon-button class="v-menu-edit-restaurant"
-      [matMenuTriggerFor]="innerMenuSettings" aria-label="Edit restaurant profile">
-      <mat-icon class="position-relative">more_vert</mat-icon>
-      <span *ngIf="tooltip" class="v-more-vert-tooltip">Scopri gli strumenti</span>
-    </button>
-    <mat-menu #innerMenuSettings="matMenu" class="innerMenuSettings" xPosition="before">
-      <button mat-menu-item (click)="goToEdit()">
-        <mat-icon>mode_edit</mat-icon>
-        <span>Modifica informazioni</span>
-      </button>
-      <button mat-menu-item (click)="editModeToggle()">
-        <mat-icon>menu_book</mat-icon>
-        <span>Modifica menu</span>
-      </button>
-      <mat-divider></mat-divider>
-      <input type="file" #logoFileInput style="display: none;" (change)="uploadImgItem($event, 'logo')">
-      <button mat-menu-item (click)="logoFileInput.click()">
-        <mat-icon>add_a_photo</mat-icon>
-        <span>Cambia logo</span>
-      </button>
-      <input type="file" #coverFileInput style="display: none;" (change)="uploadImgItem($event, 'cover')">
-      <button mat-menu-item (click)="coverFileInput.click()">
-        <mat-icon>photo_size_select_actual</mat-icon>
-        <span>Cambia immagine copertina</span>
-      </button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item (click)="generateQR()">
-        <mat-icon>qr_code_2</mat-icon>
-        <span>Genera QR code</span>
-      </button>
-    </mat-menu>
-    <img class="v-restaurant-logourl" [src]="restaurant.profile.logoUrl" alt="">
-    <p class="w-100 text-white text-center v-title-after-img m-0 mt-3">{{restaurant.profile.name}}</p>
-    <span class=" v-desc-after-img">{{restaurant.profile.description}}</span>
-  </div> -->
   <div class="d-flex w-100 justify-content-center ">
-    <button class="btn w-100 v-button-full-width v-edit-background" *ngIf="restaurantHolder" (click)="editModeToggle()"
-      style="border-radius: 0 !important;">Edit menu</button>
+    <button class="btn w-100 v-button-full-width v-edit-background v-letterspace-2px" *ngIf="restaurantHolder"
+      (click)="editModeToggle()" style="border-radius: 0 !important;">MODIFICA MENU</button>
   </div>
   <ng-container *ngIf="categories$ | async as categories; else emptyCategory">
-    <div class="d-flex flex-wrap v-restaurant-body pb-3">
-      <h2 class="w-100 px-3 pt-3 pb-0 mb-0">Le novità</h2>
-      <div class="v-container-carousel v-container-carousel-background mt-3 mb-3 ps-3 py-3 w-100">
-        <div *ngFor="let category of categories" class=" d-flex "
-          (click)="openItem(category.items[category.items.length - 1]._id, category)">
-          <div class="v-restaurant-item-novita"
-            *ngIf="category.active && category.items.length > 0 &&  category.items[category.items.length - 1].picture"
-            [ngStyle]="{ 'background-image': 'url(' + category.items[category.items.length - 1].picture + ')' }">
-            <h2 class="v-restaurant-item-novita-badge">{{category.items[category.items.length - 1].name | capitalize}}
-            </h2>
+    <div class="v-wrapper v-white-background" [style.min-height]="containerHeight">
+      <div class="d-flex flex-wrap v-restaurant-body pb-3" *ngIf="!hasInactiveCategory && hasNovita">
+        <h2 class="w-100 px-3 pt-3 pb-0 mb-0">Le novità</h2>
+        <div class="v-container-carousel v-container-carousel-background mt-3 mb-3 ps-3 py-3 w-100">
+          <div *ngFor="let category of categories" class=" d-flex "
+            (click)="openItem(category.items[category.items.length - 1]._id, category)">
+            <div class="v-restaurant-item-novita"
+              *ngIf="category.active && category.items.length > 0 &&  category.items[category.items.length - 1].picture"
+              [ngStyle]="{ 'background-image': 'url(' + category.items[category.items.length - 1].picture + ')' }">
+              <h2 class="v-restaurant-item-novita-badge">{{category.items[category.items.length - 1].name |
+                capitalize}}
+              </h2>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex w-100 justify-content-center v-edit-mode-btn-bottom" style="height: 50px;"
+          [ngClass]="{'fixed-bottom': editModeFixed, 'd-none': !editModeFixed}">
+          <button class="btn w-100 v-button-full-width v-edit-background v-letterspace-2px" *ngIf="restaurantHolder"
+            (click)="editModeToggle()" style="border-radius: 0 !important;">MODIFICA MENU</button>
+        </div>
+
+        <div
+          class="v-container-carousel v-container-carousel-background mt-3 mb-3 ps-3 py-3 v-container-carousel-rest-category-fixed"
+          [ngClass]="{'fixed-top': isElementFixed, 'd-none': !isElementFixed}">
+          <div *ngFor="let category of categories" class=" d-flex " (click)="scrollToElement(category.name)">
+            <h2 class="v-restaurant-category-fixed-top" *ngIf="category.active">{{category.name | capitalize}}</h2>
           </div>
         </div>
       </div>
 
-      <div class="d-flex w-100 justify-content-center v-edit-mode-btn-bottom" style="height: 50px;"
-        [ngClass]="{'fixed-bottom': editModeFixed, 'd-none': !editModeFixed}">
-        <button class="btn w-100 v-button-full-width v-edit-background" *ngIf="restaurantHolder"
-          (click)="editModeToggle()" style="border-radius: 0 !important;">Edit menu</button>
-      </div>
+      <div class="d-flex flex-wrap v-white-background pb-3">
+        <div class="d-flex">
 
-      <div
-        class="v-container-carousel v-container-carousel-background mt-3 mb-3 ps-3 py-3 v-container-carousel-rest-category-fixed"
-        [ngClass]="{'fixed-top': isElementFixed, 'd-none': !isElementFixed}">
-        <div *ngFor="let category of categories" class=" d-flex " (click)="scrollToElement(category.name)">
-          <h2 class="v-restaurant-category-fixed-top" *ngIf="category.active">{{category.name | capitalize}}</h2>
         </div>
-      </div>
-    </div>
-
-    <div class="d-flex flex-wrap v-white-background pb-3">
-      <div class="d-flex">
-
-      </div>
-      <h2 class="w-100 px-3 pt-3 pb-0 mb-0 d-flex justify-content-between align-items-center">Sfoglia il menù
-        <span class="v-button-small v-edit-background" *ngIf="editMode" (click)="createCategory()">Aggiungi
-          categoria</span>
-        <i *ngIf="editMode" (click)="draggable()" class="material-icons">drag_indicator</i>
-      </h2>
-      <div cdkDropList class="w-100" (cdkDropListDropped)="drop($event)">
-        <div class="w-100" *ngFor="let category of categories" cdkDrag [cdkDragDisabled]="!draggableItem">
-          <mat-accordion class="mt-3 w-100" *ngIf="category.active">
-            <app-category-expansion-panel [draggableItem]="draggableItem" [category]="category"
-              [categoryOpen]="categoryOpen" [editMode]="editMode" [restaurantHolder]="restaurantHolder"
-              [openMatPanel]="openMatPanel" (openItemEmitter)="openItemHandler($event)"
-              (addNewProductEmitter)="addNewProductHandler($event)"
-              (editCategoryEmitter)="editCategoryHandler($event)"></app-category-expansion-panel>
-          </mat-accordion>
+        <h2 class="w-100 px-3 pt-3 pb-0 mb-0 d-flex justify-content-between align-items-center">Sfoglia il menù
+          <span class="v-button-small v-edit-background" *ngIf="editMode" (click)="createCategory()">Aggiungi
+            categoria</span>
+        </h2>
+        <div cdkDropList class="w-100" (cdkDropListDropped)="drop($event)">
+          <div class="w-100" *ngFor="let category of categories" cdkDrag [cdkDragDisabled]="!draggableItem">
+            <mat-accordion class="mt-3 w-100" *ngIf="category.active">
+              <app-category-expansion-panel [draggableItem]="draggableItem" [category]="category"
+                [categoryOpen]="categoryOpen" [editMode]="editMode" [restaurantHolder]="restaurantHolder"
+                [openMatPanel]="openMatPanel" (openItemEmitter)="openItemHandler($event)"
+                (addNewProductEmitter)="addNewProductHandler($event)"
+                (editCategoryEmitter)="editCategoryHandler($event)"></app-category-expansion-panel>
+            </mat-accordion>
+          </div>
         </div>
-      </div>
 
-      <ng-container *ngIf="restaurantHolder && hasInactiveCategories(categories)">
-        <h2 class="w-100 px-3 pt-3 pb-0 mb-0 d-flex">Categorie non attive</h2>
-        <ng-container *ngFor="let category of categories">
-          <mat-accordion class="mt-3 w-100" *ngIf="!category.active">
-            <app-category-expansion-panel [category]="category" [categoryOpen]="categoryOpen" [editMode]="editMode"
-              [restaurantHolder]="restaurantHolder" [openMatPanel]="openMatPanel"
-              (openItemEmitter)="openItemHandler($event)" (addNewProductEmitter)="addNewProductHandler($event)"
-              (editCategoryEmitter)="editCategoryHandler($event)"></app-category-expansion-panel>
-          </mat-accordion>
+        <ng-container *ngIf="restaurantHolder && hasInactiveCategory">
+          <h2 class="w-100 px-3 pt-3 pb-0 mb-0 d-flex">Categorie non attive</h2>
+          <ng-container *ngFor="let category of categories">
+            <mat-accordion class="mt-3 w-100" *ngIf="!category.active">
+              <app-category-expansion-panel [category]="category" [categoryOpen]="categoryOpen" [editMode]="editMode"
+                [restaurantHolder]="restaurantHolder" [openMatPanel]="openMatPanel"
+                (openItemEmitter)="openItemHandler($event)" (addNewProductEmitter)="addNewProductHandler($event)"
+                (editCategoryEmitter)="editCategoryHandler($event)"></app-category-expansion-panel>
+            </mat-accordion>
+          </ng-container>
         </ng-container>
-      </ng-container>
+      </div>
+
     </div>
+
   </ng-container>
 
   <ng-template #emptyCategory>
@@ -127,8 +91,4 @@
       </div>
     </div>
   </ng-template>
-
-
-  <!-- <span class="v-button-small v-edit-background" *ngIf="editMode" (click)="createCategory()">Aggiungi
-    categoria</span> -->
 </div>

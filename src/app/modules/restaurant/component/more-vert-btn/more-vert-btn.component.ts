@@ -34,6 +34,7 @@ export class MoreVertBtnComponent implements OnInit {
   editMode = false;
   draggableItem = false;
   subscriptions = [];
+  categoryLength: number;
 
   constructor(
     private coreService: CoreService,
@@ -42,9 +43,8 @@ export class MoreVertBtnComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.morevert);
-
     this.restaurant$ = of(this.restaurant);
+    this.categoryLength = this.restaurant.menu.length;
   }
 
   goToEdit() {
@@ -59,27 +59,39 @@ export class MoreVertBtnComponent implements OnInit {
     }
   }
 
-  uploadImgItem(file, imageType) {
-    if (
-      file.target.files[0].type == 'image/png' ||
-      file.target.files[0].type == 'image/jpeg' ||
-      file.target.files[0].type == 'image/jpg'
-    ) {
-      this.subscriptions.push(
-        this.restaurantService
-          .uploadImage(file, this.routeRestaurantId, imageType)
-          .subscribe({
-            next: (val) => {
-              this.actionEmitter.emit({ type: 'upload' });
-            },
-          })
-      );
+  draggable() {
+    if (this.tokenExpired) {
+      this.authService.logout();
     } else {
-      this.coreService.snackBar(
-        'Not supported image',
-        'Try again',
-        'v-snack-bar-bg-danger'
-      );
+      this.actionEmitter.emit({ type: 'draggableBtn' });
+    }
+  }
+
+  uploadImgItem(file, imageType) {
+    if (this.tokenExpired) {
+      this.authService.logout();
+    } else {
+      if (
+        file.target.files[0].type == 'image/png' ||
+        file.target.files[0].type == 'image/jpeg' ||
+        file.target.files[0].type == 'image/jpg'
+      ) {
+        this.subscriptions.push(
+          this.restaurantService
+            .uploadImage(file, this.routeRestaurantId, imageType)
+            .subscribe({
+              next: (val) => {
+                this.actionEmitter.emit({ type: 'upload' });
+              },
+            })
+        );
+      } else {
+        this.coreService.snackBar(
+          'Not supported image',
+          'Try again',
+          'v-snack-bar-bg-danger'
+        );
+      }
     }
   }
 

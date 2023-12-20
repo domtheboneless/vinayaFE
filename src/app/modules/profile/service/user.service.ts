@@ -31,7 +31,7 @@ export class UserService {
     );
   }
 
-  updateProfileInfo(user: User): Observable<User> {
+  updateProfileInfo(userObject: User, userId: string): Observable<User> {
     this.core.showLoading();
     const bearer = localStorage.getItem('currentUser').replaceAll('"', '');
     const headers = new HttpHeaders({
@@ -40,7 +40,7 @@ export class UserService {
     const options = { headers };
 
     return this.http
-      .put<User>(this.URL + 'editUser/' + user._id, user, options)
+      .put<User>(this.URL + 'editUser/' + userId, userObject, options)
       .pipe(
         finalize(() => {
           this.core.hideLoading();

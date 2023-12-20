@@ -13,6 +13,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import { CategoryService } from '../../service/category.service';
 import { CoreService } from 'src/app/core/services/core/core.service';
 import { DialogBoxComponent } from 'src/app/components/dialog-box/dialog-box.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-category',
@@ -31,6 +32,7 @@ export class CreateCategoryComponent implements OnInit {
   editCategoryID;
   subscription: any;
   myFormFields;
+  routeRestaurantId;
 
   constructor(
     private _fb: FormBuilder,
@@ -80,7 +82,7 @@ export class CreateCategoryComponent implements OnInit {
     this.categoryForm = this._fb.group({
       name: ['', Validators.required],
       active: [false, Validators.required],
-      restaurantId: [[], Validators.required],
+      restaurantId: [[this.dialogData.restaurantId], Validators.required],
       items: [[]],
     });
 

@@ -1,7 +1,10 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   HostListener,
+  OnChanges,
   OnInit,
   ViewChild,
   ViewContainerRef,
@@ -9,7 +12,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { RestaurantService } from '../../service/restaurant.service';
 import { Restaurant } from 'src/app/core/models/Restaurant.class';
-import { Observable, Subscription, forkJoin, of, tap } from 'rxjs';
+import { Observable, Subscription, forkJoin, of, switchMap, tap } from 'rxjs';
 import { CategoryService } from 'src/app/modules/category/service/category.service';
 import { Category } from 'src/app/core/models/Category.class';
 import { CoreService } from 'src/app/core/services/core/core.service';
@@ -41,6 +44,7 @@ export class SingleRestaurantComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
 
   routeRestaurantId;
+  tokenPayload;
   restaurant$: Observable<Restaurant>;
   categories$: Observable<Category[]>;
   categoriesArray;
@@ -61,52 +65,45 @@ export class SingleRestaurantComponent implements OnInit {
     private authService: AuthService,
     private cacheService: CacheService,
     private viewContainerRef: ViewContainerRef,
-    private elRef: ElementRef
+    private elRef: ElementRef,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     setTimeout(() => {
       this.showCreateCategory = true;
     }, 500);
-    this.routeRestaurantId = this.activeRoute.snapshot.params['id'];
-    this.restaurant$ = this.restaurantService
-      .getRestaurantById(this.routeRestaurantId)
-      .pipe(
-        tap((restaurant) => {
-          this.currentRestaurant = restaurant;
-          this.subscriptions.push(
-            this.authService.currentUserInfo$.subscribe((currentUser) => {
-              this.tokenExpired =
-                currentUser.exp < Date.now() / 1000 ? true : false;
-              if (
-                currentUser &&
-                restaurant.profile.username == currentUser['cognito:username']
-              ) {
-                this.restaurantHolder = true;
-              }
-            })
-          );
-          let cache = this.cacheService.get(this.routeRestaurantId);
-          if (
-            cache &&
-            cache.idRest == this.routeRestaurantId &&
-            cache.category
-          ) {
-            this.tooltip = false;
-            this.categories$ = cache.category;
-            this.originalCategoriesArray = [...cache.categoryArray];
-            this.categoriesArray = [...cache.categoryArray];
-          } else {
-            this.getCategoryByRestaurant();
-          }
-        })
-      );
-  }
 
-  // @HostListener('window:resize', ['$event'])
-  // async onResize(event: any) {
-  //   this.containerHeight = this.getBackgroundDivHeight();
-  // }
+    this.routeRestaurantId = this.activeRoute.snapshot.params['id'];
+
+    this.restaurant$ = this.authService.currentUserInfo$.pipe(
+      tap((currentUser) => {
+        this.tokenPayload = currentUser;
+        this.tokenExpired = currentUser.exp < Date.now() / 1000 ? true : false;
+      }),
+      switchMap(() => {
+        return this.restaurantService.getRestaurantById(this.routeRestaurantId);
+      }),
+      tap((restaurant) => {
+        this.currentRestaurant = restaurant;
+        if (
+          this.tokenPayload &&
+          restaurant.profile.username == this.tokenPayload['cognito:username']
+        ) {
+          this.restaurantHolder = true;
+        }
+        let cache = this.cacheService.get(this.routeRestaurantId);
+        if (cache && cache.idRest == this.routeRestaurantId && cache.category) {
+          this.tooltip = false;
+          this.categories$ = cache.category;
+          this.originalCategoriesArray = [...cache.categoryArray];
+          this.categoriesArray = [...cache.categoryArray];
+        } else {
+          this.getCategoriesByRestaurant();
+        }
+      })
+    );
+  }
 
   async getBackgroundDivHeight() {
     this.containerHeight = await Utils.getBackgroundDivHeight(
@@ -136,6 +133,7 @@ export class SingleRestaurantComponent implements OnInit {
       this.originalCategoriesArray = [...this.categoriesArray];
       this.updateCacheWithCategories(this.categoriesArray);
     }
+    this.draggableItem = false;
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -148,6 +146,13 @@ export class SingleRestaurantComponent implements OnInit {
   }
 
   draggable() {
+    if (!this.draggableItem) {
+      this.coreService.snackBar(
+        'Trascina le categorie per riordinarle',
+        'OK',
+        'v-snack-bar-bg-success'
+      );
+    }
     this.draggableItem = !this.draggableItem;
     this.accordion.closeAll();
   }
@@ -215,7 +220,10 @@ export class SingleRestaurantComponent implements OnInit {
 
   createCategory() {
     this.editMode = true;
-    const dialogConfig = this.createDialogConfig({ editing: false });
+    const dialogConfig = this.createDialogConfig({
+      editing: false,
+      restaurantId: this.routeRestaurantId,
+    });
     let dialog = this.coreService.openDialog(
       CreateCategoryComponent,
       dialogConfig
@@ -224,7 +232,7 @@ export class SingleRestaurantComponent implements OnInit {
     this.subscriptions.push(
       dialog.afterClosed().subscribe((result) => {
         if (result && result.created) {
-          this.getCategoryByRestaurant();
+          this.getCategoriesByRestaurant();
         }
       })
     );
@@ -250,14 +258,22 @@ export class SingleRestaurantComponent implements OnInit {
           const categoryId = result.idCategory;
           this.updateCategory(categoryId);
         } else if (result && result.deleted) {
-          this.getCategoryByRestaurant();
+          this.getCategoriesByRestaurant();
         }
       })
     );
   }
 
-  hasInactiveCategories(categories: Category[]): boolean {
-    return categories.some((category) => !category.active);
+  hasInactiveCategory;
+  checkInactiveCategories(categories: Category[]) {
+    this.hasInactiveCategory = categories.some((category) => !category.active);
+  }
+
+  hasNovita = false;
+  checkNovita(categories: Category[]) {
+    this.hasNovita = categories
+      .flatMap((category) => category.items || [])
+      .some((item) => !!item.picture);
   }
 
   addNewProductHandler(event) {
@@ -311,15 +327,17 @@ export class SingleRestaurantComponent implements OnInit {
           this.categories$ = of(updatedCategories);
           this.categoriesArray = updatedCategories;
           if (!updatedCategory.restaurantId.includes(this.routeRestaurantId)) {
-            this.getCategoryByRestaurant();
+            this.getCategoriesByRestaurant();
           }
           this.updateCacheWithCategories(updatedCategories);
+          this.checkInactiveCategories(updatedCategories);
+          this.checkNovita(updatedCategories);
         });
       })
     );
   }
 
-  getCategoryByRestaurant() {
+  getCategoriesByRestaurant() {
     this.subscriptions.push(
       this.restaurantService
         .getRestaurantById(this.routeRestaurantId)
@@ -339,6 +357,8 @@ export class SingleRestaurantComponent implements OnInit {
                   this.categoriesArray = categories;
                   this.originalCategoriesArray = [...this.categoriesArray];
                   this.updateCacheWithCategories(categories);
+                  this.checkInactiveCategories(categories);
+                  this.checkNovita(categories);
                 })
               );
             }
@@ -357,8 +377,12 @@ export class SingleRestaurantComponent implements OnInit {
       this.restaurant$ = this.restaurantService.getRestaurantById(
         this.routeRestaurantId
       );
+
+      this.cacheService.clear();
     } else if (event.type == 'editBtn') {
       this.editModeToggle();
+    } else if (event.type == 'draggableBtn') {
+      this.draggable();
     }
   }
 

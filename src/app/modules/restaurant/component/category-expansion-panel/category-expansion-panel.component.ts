@@ -4,8 +4,10 @@ import {
   EventEmitter,
   HostListener,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 import { Category } from 'src/app/core/models/Category.class';
 import { findElementByText } from 'src/app/core/utils/dom-utils';

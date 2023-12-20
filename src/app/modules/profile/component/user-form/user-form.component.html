@@ -1,0 +1,58 @@
+<form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="mt-1">
+
+
+
+  <div class="row mx-0 ps-2">
+
+    <div class="col-12 px-0">
+      <mat-form-field class="d-block">
+        <mat-label>Username</mat-label>
+        <input matInput disabled placeholder="username" value="{{userForm.get('username').value}}" readonly>
+      </mat-form-field>
+    </div>
+
+    <div class="col-12 px-0">
+      <mat-form-field class="d-block">
+        <mat-label>Nome</mat-label>
+        <input matInput placeholder="Nome" formControlName="name">
+        <!-- <mat-error *ngIf="userForm.get('name').hasError('required')">* Il nome è obbligatorio</mat-error> -->
+      </mat-form-field>
+    </div>
+
+    <div class="col-12 px-0">
+      <mat-form-field class="d-block">
+        <mat-label>Cognome</mat-label>
+        <input matInput placeholder="Cognome" formControlName="lastname">
+        <!-- <mat-error *ngIf="userForm.get('lastname').hasError('required')">* Il cognome è obbligatorio</mat-error> -->
+      </mat-form-field>
+    </div>
+
+    <div class="col-12 mt-2 px-0">
+      <mat-form-field class="d-block ">
+        <mat-label>Descrizione</mat-label>
+        <input matInput placeholder="Descrizione" formControlName="description">
+        <!-- <mat-error *ngIf="userForm.get('description').hasError('required')">* La descrizione è
+          obbligatoria</mat-error> -->
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="row mx-0 ps-2">
+    <div class="col-12 px-0">
+      <mat-form-field class="d-block">
+        <mat-label>E-mail</mat-label>
+        <input matInput placeholder="" formControlName="email">
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Altri campi del modulo -->
+
+  <div class="d-flex justify-content-center mt-4 mb-4 flex-column align-items-center">
+    <button class="btn col-3 v-button v-border-50 v-letterspace-2px"
+      [class.v-button-disabled]="!userForm.dirty || userForm.invalid" type="submit">Salva</button>
+    <div class="col-3 v-small v-shadow text-center v-border-50 v-border-1px-solid mt-3" style="padding: .5rem;">
+      <span class="v-letterspace-2px" (click)="onCancel()">CLOSE</span>
+    </div>
+  </div>
+</form>

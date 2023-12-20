@@ -9,7 +9,6 @@ import { RestaurantService } from '../../restaurant/service/restaurant.service';
 import { Restaurant } from 'src/app/core/models/Restaurant.class';
 import { User } from 'src/app/core/models/User.class';
 import { HomeComponent } from 'src/app/components/home/home/home.component';
-import { ProfileDescriptionUpdateComponent } from '../component/profile-description-update/profile-description-update.component';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { CacheService } from 'src/app/core/services/cache/cache.service';
 
@@ -30,6 +29,8 @@ export class UserComponent implements OnInit {
 
   tempRest;
   restaurants$: Observable<Restaurant[]>;
+  editProfileToggle: boolean = false;
+  profileHolder = false;
 
   constructor(
     private userService: UserService,
@@ -55,26 +56,28 @@ export class UserComponent implements OnInit {
         }
 
         if (this.decode.username == this.urlID) {
+          this.profileHolder = true;
           if (this.cacheService.get('userProfile')) {
             this.userProfile$ = of(this.cacheService.get('userProfile'));
             this.restaurants$ = of(this.cacheService.get('restaurantList'));
             this.userProfile$.subscribe((user) => (this.userId = user._id));
           } else {
-            this.userProfile$ = this.userService
-              .getUserByUsername(this.decode.username)
-              .pipe(
-                tap((user: User) => {
-                  this.userId = user._id;
-                  this.restaurants$ = this.restaurantService
-                    .getRestaurantsList(user.restaurants)
-                    .pipe(
-                      tap((rest: Restaurant[]) => {
-                        this.cacheService.set('restaurantList', rest);
-                      })
-                    );
-                  this.cacheService.set('userProfile', user);
-                })
-              );
+            // this.userProfile$ = this.userService
+            //   .getUserByUsername(this.decode.username)
+            //   .pipe(
+            //     tap((user: User) => {
+            //       this.userId = user._id;
+            //       this.restaurants$ = this.restaurantService
+            //         .getRestaurantsList(user.restaurants)
+            //         .pipe(
+            //           tap((rest: Restaurant[]) => {
+            //             this.cacheService.set('restaurantList', rest);
+            //           })
+            //         );
+            //       this.cacheService.set('userProfile', user);
+            //     })
+            //   );
+            this.getUser();
           }
         } else {
           this.authService.logout();
@@ -109,25 +112,6 @@ export class UserComponent implements OnInit {
       );
   }
 
-  changeDescription() {
-    const dialogConfig: MatDialogConfig = {
-      data: { userId: this.userId },
-      width: '300px',
-      height: '200px',
-      panelClass: 'form-dialog-color',
-    };
-    let dialog = this.core.openDialog(
-      ProfileDescriptionUpdateComponent,
-      dialogConfig
-    );
-
-    dialog.afterClosed().subscribe((res) => {
-      if (res.update) {
-        this.userProfile$ = this.userService.getUserById(this.userId);
-      }
-    });
-  }
-
   goTo(restaurant: Restaurant) {
     this.core.goTo('/restaurant/' + restaurant._id);
   }
@@ -138,5 +122,37 @@ export class UserComponent implements OnInit {
 
   ngOnDestroy() {
     this.current.unsubscribe();
+  }
+
+  editProfile() {
+    this.editProfileToggle = !this.editProfileToggle;
+  }
+
+  userFormHandler(event) {
+    if (event == 'cancel') this.editProfile();
+
+    if (event == 'update') {
+      this.cacheService.clear();
+      this.getUser();
+      this.editProfile();
+    }
+  }
+
+  getUser() {
+    this.userProfile$ = this.userService
+      .getUserByUsername(this.decode.username)
+      .pipe(
+        tap((user: User) => {
+          this.userId = user._id;
+          this.restaurants$ = this.restaurantService
+            .getRestaurantsList(user.restaurants)
+            .pipe(
+              tap((rest: Restaurant[]) => {
+                this.cacheService.set('restaurantList', rest);
+              })
+            );
+          this.cacheService.set('userProfile', user);
+        })
+      );
   }
 }

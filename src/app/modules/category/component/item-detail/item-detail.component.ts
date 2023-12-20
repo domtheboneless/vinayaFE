@@ -6,12 +6,9 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { CoreService } from 'src/app/core/services/core/core.service';
-import { ProfileDescriptionUpdateComponent } from 'src/app/modules/profile/component/profile-description-update/profile-description-update.component';
-import { UserService } from 'src/app/modules/profile/service/user.service';
 import { CategoryService } from '../../service/category.service';
 import { Items } from 'src/app/core/models/Category.class';
 import { Observable, of } from 'rxjs';
-import { Router } from '@angular/router';
 import { ItemEditComponent } from '../item-edit/item-edit.component';
 
 @Component({

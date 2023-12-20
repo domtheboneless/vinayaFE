@@ -4,33 +4,12 @@
       [routeRestaurantId]="routeRestaurantId" [morevert]="false"
       (actionEmitter)="actionHandler($event)"></app-restaurant-header-cover-logo>
   </ng-container>
-
-  <!-- <div class="d-flex flex-wrap justify-content-center align-items-center"
-    *ngIf="restaurant$ | async as restaurant; else newRest">
-    <div class="d-flex flex-wrap v-restaurant-header justify-content-center align-items-center"
-      [ngStyle]="{ 'background-image': 'url(' + restaurant.profile?.coverImg + ')' }">
-      <img class="v-restaurant-logourl" [src]="restaurant.profile.logoUrl" alt="">
-      <p class="w-100 text-white text-center v-title-after-img m-0 mt-3">{{restaurant.profile.name}}</p>
-      <span class=" v-desc-after-img">{{restaurant.profile.description}}</span>
-    </div>
-  </div>
-  <ng-template #newRest>
-    <div class="d-flex flex-wrap justify-content-center align-items-center">
-      <div class="d-flex flex-wrap v-restaurant-header justify-content-center align-items-center"
-        style="background-image: url('../../../../../assets/images/core/backdropsquare.png');">
-        <img class="v-restaurant-logourl" src="../../../../../assets/images/core/backdropsquare.png" alt="">
-        <p class="w-100 text-white text-center v-title-after-img m-0 mt-3"></p>
-        <span class=" v-desc-after-img"></span>
-      </div>
-    </div>
-  </ng-template> -->
   <div class="d-flex flex-wrap pb-3 v-white-background px-3">
     <b class="ps-2 mt-4 m-0">Edit info ristorante</b>
     <ng-container *ngIf="restaurant$ | async as restaurant; else newRestForm">
       <app-restaurant-form [currentRestaurant]="currentRestaurant" (buttonEmitter)="buttonEmitterHandler($event)"
         class="w-100"></app-restaurant-form>
     </ng-container>
-
     <ng-template #newRestForm>
       <app-restaurant-form (buttonEmitter)="buttonEmitterHandler($event)" class="w-100"></app-restaurant-form>
     </ng-template>

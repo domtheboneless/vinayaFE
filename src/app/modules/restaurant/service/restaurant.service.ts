@@ -52,6 +52,29 @@ export class RestaurantService {
       );
   }
 
+  removeCategoryFromMenuRestaurant(
+    idRestaurant,
+    idCategory
+  ): Observable<Restaurant> {
+    this.core.showLoading();
+    const options = this.headers();
+
+    const body = new FormData();
+    body.append('menu', idCategory);
+
+    return this.http
+      .put<Restaurant>(
+        this.serverURL + 'edit/' + idRestaurant + '/menu/removeCategory',
+        body,
+        options
+      )
+      .pipe(
+        finalize(() => {
+          this.core.hideLoading();
+        })
+      );
+  }
+
   editProfile(body, idRestaurant): Observable<Restaurant> {
     this.core.showLoading();
     const options = this.headers();
@@ -75,6 +98,19 @@ export class RestaurantService {
 
     return this.http
       .post<Restaurant>(this.serverURL + 'new', body, options)
+      .pipe(
+        finalize(() => {
+          this.core.hideLoading();
+        })
+      );
+  }
+
+  deleteRestaurant(id): Observable<any> {
+    this.core.showLoading();
+    const options = this.headers();
+
+    return this.http
+      .delete<Restaurant>(this.serverURL + 'delete/' + id, options)
       .pipe(
         finalize(() => {
           this.core.hideLoading();

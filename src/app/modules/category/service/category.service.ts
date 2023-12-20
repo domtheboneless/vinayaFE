@@ -60,6 +60,19 @@ export class CategoryService {
       );
   }
 
+  removeRestaurantIdFromCategory(
+    idCategory: string,
+    idRestaurant: string
+  ): Observable<Category> {
+    this.core.showLoading();
+    const options = this.headers();
+    return this.http.put<Category>(
+      this.serverURL + 'removeRestaurantFromCategory/' + idCategory,
+      { idRest: idRestaurant },
+      options
+    );
+  }
+
   getCategoryByRestaurantId(id: string): Observable<Category> {
     return this.http.get<Category>(this.serverURL + 'restaurant/' + id);
   }

@@ -1,18 +1,22 @@
 <button (click)="tooltip = false" *ngIf="restaurantHolder" mat-icon-button class="v-menu-edit-restaurant"
-  [matMenuTriggerFor]="innerMenuSettings" aria-label="Edit restaurant profile">
-  <mat-icon class="position-relative">more_vert</mat-icon>
+  style="margin-top: 15px" [matMenuTriggerFor]="innerMenuSettings" aria-label="Edit restaurant profile">
+  <mat-icon class="position-relative">settings</mat-icon>
   <span *ngIf="tooltip" class="v-more-vert-tooltip">Scopri gli strumenti</span>
 </button>
 <mat-menu #innerMenuSettings="matMenu" class="innerMenuSettings" xPosition="before">
-  <button mat-menu-item (click)="goToEdit()">
-    <mat-icon>edit_note</mat-icon>
-    <span>Modifica ristorante</span>
-  </button>
   <button mat-menu-item (click)="editModeToggle()">
     <mat-icon>menu_book</mat-icon>
     <span>Modifica menu</span>
   </button>
+  <button mat-menu-item (click)="draggable()" [disabled]="categoryLength < 1">
+    <mat-icon>drag_indicator</mat-icon>
+    <span>Ordina categorie</span>
+  </button>
   <mat-divider></mat-divider>
+  <button mat-menu-item (click)="goToEdit()">
+    <mat-icon>edit_note</mat-icon>
+    <span>Modifica ristorante</span>
+  </button>
   <input type="file" #logoFileInput style="display: none;" (change)="uploadImgItem($event, 'logo')">
   <button mat-menu-item (click)="logoFileInput.click()">
     <mat-icon>add_a_photo</mat-icon>

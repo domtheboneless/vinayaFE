@@ -41,9 +41,9 @@ export class AuthService {
   login(form: FormGroup) {
     // this.coreService.showLoading();
     return this.http.post<any>(`${this.serverURL}auth/login`, form.value).pipe(
-      tap((user) => {
-        this.currentUserSubject.next(user);
-        localStorage.setItem('currentUser', JSON.stringify(user.access_token));
+      tap((token) => {
+        this.currentUserSubject.next(token);
+        localStorage.setItem('currentUser', JSON.stringify(token.access_token));
         localStorage.setItem('currentUsername', form.value.username);
         this.coreService.snackBar('Logged in', 'OK', 'v-snack-bar-bg-success');
         this.getCurrentUserInfo();
@@ -58,6 +58,8 @@ export class AuthService {
     if (localStorage.getItem('currentUser')) {
       this.decode = jwt_decode(localStorage.getItem('currentUser'));
       const payload = this.decode['payload'];
+      console.log(payload);
+
       if (payload) {
         this.currentUserInfo.next(payload);
         return this.currentUserInfo$;

@@ -14,7 +14,11 @@
 
     <mat-form-field class="w-100">
       <mat-label>Prezzo</mat-label>
-      <input matInput type="number" placeholder="Price" formControlName="price">
+      <div class="col-12 d-flex">
+        <div class="col-1" style="margin-right: -10px;">€</div>
+        <div class="col-10"><input matInput type="number" placeholder="Price" formControlName="price"></div>
+      </div>
+
       <mat-error *ngIf="itemForm.get('price').hasError('required')">Price is required</mat-error>
     </mat-form-field>
 

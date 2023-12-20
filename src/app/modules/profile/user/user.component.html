@@ -1,21 +1,28 @@
 <div *ngIf="userProfile$ | async as userProfile" class="profile-container"
   [ngStyle]="{ 'background-image': 'url(' + userProfile.profile?.imgProfile + ')' }">
   <div class="mt-4">
-    <div class="d-flex w-100 justify-content-center position-relative">
-      <div class="col-8 ">
-        <!-- <img class="img-fluid v-img-profile " [src]="userProfile.profile?.imgProfile " alt="foto"> -->
+    <button [matMenuTriggerFor]="innerMenuSettings" aria-label="Edit profile"
+      style="background: none; border: none; position: absolute; top: 100px; right: 10px;" *ngIf="profileHolder">
+      <mat-icon class="v-white-text">settings</mat-icon>
+      <span *ngIf="tooltip" class="v-more-vert-tooltip">Scopri gli strumenti</span>
+    </button>
+    <mat-menu #innerMenuSettings="matMenu" class="innerMenuSettings" xPosition="before">
+      <button mat-menu-item (click)="editProfile()">
+        <mat-icon>person</mat-icon>
+        <span>Modifica profilo</span>
+      </button>
+      <button mat-menu-item (click)="fileInput.click()">
         <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)">
-        <div class="position-absolute v-icon-upload-position">
-          <i class="material-icons bottom-0 v-icon-upload" (click)="fileInput.click()">upload</i>
-        </div>
-      </div>
-    </div>
+        <mat-icon>add_a_photo</mat-icon>
+        <span>Modifica immagine</span>
+      </button>
+    </mat-menu>
     <div class="d-flex flex-wrap mt-4 v-profile-info">
       <div class="col-12 ">
         <h1 class="v-profile-fullname text-center mb-0">{{userProfile.profile?.name + " "+ userProfile.profile?.lastname
           }}
         </h1>
-        <p class="text-center v-text-desc mt-0 mb-1" (click)="changeDescription()">
+        <p class="text-center v-text-desc mt-0 mb-1">
           "{{userProfile.profile?.description}}"</p>
       </div>
       <div class="d-flex w-100 justify-content-center mt-2">
@@ -28,7 +35,10 @@
       </div>
     </div>
   </div>
-
+  <div class="row v-white-background w-100 mx-0 py-3 v-edit-profile-anim pt-4" *ngIf="editProfileToggle">
+    <h5>Modifica informazioni personali</h5>
+    <app-user-form [userProfile$]="userProfile$" (buttonEmitter)="userFormHandler($event)"></app-user-form>
+  </div>
   <div *ngIf="restaurants$ | async as restaurants" class="v-risto-container">
     <div class="d-flex flex-column justify-content-center">
       <i class="material-icons text-center mb-2">local_restaurant</i>

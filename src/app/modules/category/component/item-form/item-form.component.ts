@@ -32,7 +32,7 @@ export class ItemFormComponent implements OnInit {
     this.itemForm = this._fb.group({
       name: ['', Validators.required],
       desc: ['', Validators.required],
-      price: [0, Validators.required],
+      price: ['1.00', Validators.required],
       picture: [''],
       inStock: [true, Validators.required],
       rate: [0],
