@@ -8,8 +8,6 @@ import { Observable, of, switchMap, tap } from 'rxjs';
 import { RestaurantService } from '../../restaurant/service/restaurant.service';
 import { Restaurant } from 'src/app/core/models/Restaurant.class';
 import { User } from 'src/app/core/models/User.class';
-import { HomeComponent } from 'src/app/components/home/home/home.component';
-import { MatDialogConfig } from '@angular/material/dialog';
 import { CacheService } from 'src/app/core/services/cache/cache.service';
 
 @Component({

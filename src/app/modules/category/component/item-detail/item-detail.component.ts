@@ -25,18 +25,11 @@ export class ItemDetailComponent implements OnInit {
   ) {}
 
   itemId = this.dialogData.item;
-  preview = this.dialogData.preview;
-  itemPreview = this.dialogData.itemPreview;
-
   item$: Observable<Items>;
   qta = 1;
 
   ngOnInit() {
-    if (this.preview && this.itemPreview) {
-      this.item$ = of(this.itemPreview);
-    } else {
-      this.item$ = this.categoryService.getSingleItem(this.itemId);
-    }
+    this.item$ = this.categoryService.getSingleItem(this.itemId);
   }
 
   close() {
@@ -51,19 +44,5 @@ export class ItemDetailComponent implements OnInit {
     if (this.qta > 0) {
       this.qta -= 1;
     }
-  }
-
-  edit() {
-    this.dialogRef.close();
-    const dialogConfig: MatDialogConfig = {
-      data: {
-        item: this.itemId,
-        itemPreview: this.itemPreview,
-        idCategory: this.dialogData.idCategory,
-      },
-      width: '300px',
-      panelClass: '',
-    };
-    this.core.openDialog(ItemEditComponent, dialogConfig);
   }
 }

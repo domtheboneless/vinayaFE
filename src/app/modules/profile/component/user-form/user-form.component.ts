@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { User } from 'src/app/core/models/User.class';
 import { UserService } from '../../service/user.service';
+import { AuthService } from 'src/app/services/auth/auth.service';
 
 @Component({
   selector: 'app-user-form',
@@ -15,9 +16,20 @@ export class UserFormComponent implements OnInit {
 
   currentUserId: string;
   userForm: FormGroup;
+  userInfo;
 
-  constructor(private _fb: FormBuilder, private _userService: UserService) {}
+  constructor(
+    private _fb: FormBuilder,
+    private _userService: UserService,
+    private authService: AuthService
+  ) {}
   ngOnInit() {
+    this.authService.currentUserInfo$.subscribe(
+      (userPayload) => (this.userInfo = userPayload)
+    );
+
+    console.log();
+
     this.userForm = this._fb.group({
       name: ['', Validators.required],
       lastname: ['', Validators.required],
@@ -34,7 +46,7 @@ export class UserFormComponent implements OnInit {
         lastname: user.profile.lastname,
         username: user.profile.username,
         description: user.profile.description,
-        email: user.profile.email,
+        email: this.userInfo.email,
         imgProfile: user.profile.imgProfile,
         role: user.profile.role,
       });

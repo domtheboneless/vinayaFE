@@ -55,6 +55,9 @@ export class SingleRestaurantComponent implements OnInit {
   editMode = false;
   tokenExpired = false;
 
+  // order var
+  cartBtn = true;
+  totalOrderEuro = 25.55;
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -78,8 +81,11 @@ export class SingleRestaurantComponent implements OnInit {
 
     this.restaurant$ = this.authService.currentUserInfo$.pipe(
       tap((currentUser) => {
-        this.tokenPayload = currentUser;
-        this.tokenExpired = currentUser.exp < Date.now() / 1000 ? true : false;
+        if (currentUser) {
+          this.tokenPayload = currentUser;
+          this.tokenExpired =
+            currentUser.exp < Date.now() / 1000 ? true : false;
+        }
       }),
       switchMap(() => {
         return this.restaurantService.getRestaurantById(this.routeRestaurantId);

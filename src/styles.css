@@ -98,6 +98,10 @@ body {
 }
 
 /*PALETTE TEXT AND BACKGROUND*/
+
+.v-bg-img-default {
+  background-image: url("../src/assets/images/core/backdropsquare.png");
+}
 .v-primary-text {
   color: var(--vinaya-black) !important;
 }
@@ -419,6 +423,11 @@ button:focus-visible {
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
   width: 96% !important;
 }
+
+.mdc-text-field--filled.mdc-text-field--disabled {
+  width: 96% !important;
+}
+
 .innerMenuSettings {
   position: absolute !important;
   right: 20px !important;
@@ -1040,7 +1049,7 @@ mat-label {
   background: linear-gradient(
     180deg,
     transparent,
-    transparent,
+    #000000cf,
     var(--vinaya-cyan)
   );
   opacity: 0.3;

@@ -188,7 +188,6 @@ export class EditRestaurantComponent implements OnInit {
             }
           }),
           tap((results) => {
-            // Add logs or other operations based on your needs
             console.log(results);
             this.cacheService.clear();
             this.core.goTo(`profile/${this.currentUser}`);

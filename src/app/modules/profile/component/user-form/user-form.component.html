@@ -13,6 +13,13 @@
 
     <div class="col-12 px-0">
       <mat-form-field class="d-block">
+        <mat-label>Email</mat-label>
+        <input matInput disabled placeholder="email" value="{{userForm.get('email').value}}" readonly>
+      </mat-form-field>
+    </div>
+
+    <div class="col-12 px-0">
+      <mat-form-field class="d-block">
         <mat-label>Nome</mat-label>
         <input matInput placeholder="Nome" formControlName="name">
         <!-- <mat-error *ngIf="userForm.get('name').hasError('required')">* Il nome è obbligatorio</mat-error> -->
@@ -37,14 +44,6 @@
     </div>
   </div>
 
-  <div class="row mx-0 ps-2">
-    <div class="col-12 px-0">
-      <mat-form-field class="d-block">
-        <mat-label>E-mail</mat-label>
-        <input matInput placeholder="" formControlName="email">
-      </mat-form-field>
-    </div>
-  </div>
 
   <!-- Altri campi del modulo -->
 

@@ -29,6 +29,14 @@
             (click)="editModeToggle()" style="border-radius: 0 !important;">MODIFICA MENU</button>
         </div>
 
+        <!-- ORDER BUTTON -->
+        <div class="d-flex w-100 justify-content-center v-edit-mode-btn-bottom" style="height: 50px;"
+          [ngClass]="{'fixed-bottom': cartBtn , 'd-none': !cartBtn}">
+          <button class="btn w-100 v-button-full-width v-primary-background v-letterspace-2px fs-6"
+            *ngIf="!restaurantHolder" (click)="console.log('ordina')" style="border-radius: 0 !important;">Ordina ora
+            €{{totalOrderEuro}}</button>
+        </div>
+        <!-- end order -->
         <div
           class="v-container-carousel v-container-carousel-background mt-3 mb-3 ps-3 py-3 v-container-carousel-rest-category-fixed"
           [ngClass]="{'fixed-top': isElementFixed, 'd-none': !isElementFixed}">

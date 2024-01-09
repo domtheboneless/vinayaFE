@@ -46,8 +46,8 @@
     </div>
     <div class="v-container-carousel">
       <div *ngFor="let restaurant of restaurants" (click)="goTo(restaurant)"
-        class="v-div-restaurant-carousel w-100 v-item-container-carousel d-flex col-12"
-        [ngStyle]="{ 'background-image': 'url(' + restaurant.profile.logoUrl + ')' }">
+        class="v-div-restaurant-carousel w-100 v-item-container-carousel d-flex col-12 v-bg-img-default"
+        [ngStyle]="restaurant.profile.logoUrl ? { 'background-image': 'url(' + restaurant.profile.logoUrl + ')' } : ''">
         <p class="v-p-restaurant-carousel">{{restaurant.profile.name}}</p>
         <i class="material-icons v-icon-item-carousel">keyboard_arrow_right</i>
       </div>
