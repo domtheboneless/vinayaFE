@@ -78,6 +78,7 @@ export class CoreService {
   snackBar(message: string, button: string, color: string) {
     this._snackBar.open(message, button, {
       duration: 2000,
+      verticalPosition: 'bottom',
       panelClass: color,
     });
   }

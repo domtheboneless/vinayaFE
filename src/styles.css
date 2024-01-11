@@ -23,7 +23,6 @@ body {
     var(--vinaya-cyan),
     var(--vinaya-dark)
   ) !important;
-  /* background-color: var(--vinaya-dark); */
 }
 
 .container_custom {
@@ -114,6 +113,10 @@ body {
   color: var(--vinaya-dark) !important;
 }
 
+.v-color-btn-disabled {
+  color: #ff8f00 !important;
+}
+
 .v-primary-text {
   color: var(--vinaya-cyan) !important;
 }
@@ -188,9 +191,9 @@ body {
 
 .v-snack-bar-bg-success {
   --mdc-snackbar-container-color: rgb(255, 255, 255);
-  --mat-mdc-snack-bar-button-color: var(--vinaya-edit-mode-color);
-  --mdc-snackbar-supporting-text-color: var(--vinaya-edit-mode-color);
-  --mat-snack-bar-button-color: var(--vinaya-edit-mode-color);
+  --mat-mdc-snack-bar-button-color: var(--vinaya-cyan);
+  --mdc-snackbar-supporting-text-color: var(--vinaya-cyan);
+  --mat-snack-bar-button-color: var(--vinaya-cyan);
 }
 
 /* SWTICH CHECKBOX*/
@@ -419,6 +422,19 @@ button:focus-visible {
 }
 
 /*MATERIAL OVERRIDE*/
+
+.mat-mdc-slider.mat-primary {
+  --mdc-slider-handle-color: #ff7800;
+  --mdc-slider-focus-handle-color: #ff7800;
+  --mdc-slider-hover-handle-color: #ff7800;
+  --mdc-slider-active-track-color: #ff7800;
+  --mdc-slider-inactive-track-color: #ff7800;
+  --mdc-slider-with-tick-marks-active-container-color: #fff;
+  --mdc-slider-with-tick-marks-inactive-container-color: #ff7800;
+  --mat-mdc-slider-ripple-color: #ff7800;
+  --mat-mdc-slider-hover-ripple-color: #ff780073;
+  --mat-mdc-slider-focus-ripple-color: #ff780073;
+}
 
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
   width: 96% !important;
@@ -1049,7 +1065,7 @@ mat-label {
   background: linear-gradient(
     180deg,
     transparent,
-    #000000cf,
+    transparent,
     var(--vinaya-cyan)
   );
   opacity: 0.3;
@@ -1059,7 +1075,7 @@ mat-label {
 
 .v-item-detail-bg {
   padding-top: 1em;
-  background: #00000024;
+  background: #210f0052;
   width: 100%;
   border-radius: 100px 100px 0 0;
 }
@@ -1071,18 +1087,29 @@ mat-label {
   /* height: 20vh; */
   width: 100%;
   z-index: 2;
-  background: #00000024 !important;
+  background: #210f0052 !important;
   background: linear-gradient(0deg, #00000080, transparent);
   border-radius: 0px 0px 100px 100px;
 }
 
 .v-item-qta-number {
   background-color: white;
-  border-radius: 10px;
+  /* border-radius: 10px; */
   color: var(--vinaya-cyan);
   text-align: center;
 }
 
+.v-item-detail-remove {
+  background: #ff7800;
+  color: white !important;
+  border-radius: 10px 0 0 10px;
+}
+
+.v-item-detail-add {
+  color: white !important;
+  background-color: #ff7700;
+  border-radius: 0px 10px 10px 0;
+}
 /* ITEM EDIT PAGE*/
 .v-radius-100 {
   border-radius: 100%;

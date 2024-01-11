@@ -1,10 +1,7 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   HostListener,
-  OnChanges,
   OnInit,
   ViewChild,
   ViewContainerRef,
@@ -26,6 +23,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatAccordion } from '@angular/material/expansion';
 import { QrCodeDialogComponent } from '../qr-code-dialog/qr-code-dialog.component';
 import Utils from '../../../../core/utils/common-function';
+import { CartService } from 'src/app/services/cart/cart.service';
 
 @Component({
   selector: 'app-single-restaurant',
@@ -57,7 +55,7 @@ export class SingleRestaurantComponent implements OnInit {
 
   // order var
   cartBtn = true;
-  totalOrderEuro = 25.55;
+  totalOrderEuro = '0';
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -69,7 +67,7 @@ export class SingleRestaurantComponent implements OnInit {
     private cacheService: CacheService,
     private viewContainerRef: ViewContainerRef,
     private elRef: ElementRef,
-    private cdr: ChangeDetectorRef
+    private cartService: CartService
   ) {}
 
   ngOnInit() {
@@ -109,6 +107,18 @@ export class SingleRestaurantComponent implements OnInit {
         }
       })
     );
+
+    this.cartService.cartItems$.subscribe((cartItem) => {
+      let updatedTotalOrderEuro = 0;
+
+      cartItem.forEach((item) => {
+        updatedTotalOrderEuro += item.totalEuro;
+      });
+
+      if (updatedTotalOrderEuro > 0) {
+        this.totalOrderEuro = updatedTotalOrderEuro.toFixed(2);
+      }
+    });
   }
 
   async getBackgroundDivHeight() {
@@ -219,6 +229,12 @@ export class SingleRestaurantComponent implements OnInit {
           const categoryId = result.idCategory;
           this.updateCategory(categoryId);
           this.categoryOpen = category.name;
+        } else if (result && result.order) {
+          this.coreService.snackBar(
+            'Aggiunto al carrello',
+            'OK',
+            'v-snack-bar-bg-success'
+          );
         }
       })
     );
@@ -425,6 +441,10 @@ export class SingleRestaurantComponent implements OnInit {
       categoryArray: categories,
     });
     this.categories$ = of(categories);
+  }
+
+  checkOut() {
+    console.log(this.cartService.cartItems);
   }
 
   ngOnDestroy() {
