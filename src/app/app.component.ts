@@ -7,7 +7,7 @@ import { CoreService } from './core/services/core/core.service';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  title = 'VINAYA';
+  title = 'EXPò';
   loading$;
 
   constructor(private core: CoreService, private cdref: ChangeDetectorRef) {}
