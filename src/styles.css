@@ -1191,3 +1191,13 @@ mat-label {
 .custom-checkbox:checked::before {
   opacity: 1; /* Rendilo visibile quando selezionato */
 }
+
+/* ORDER DIALOG */
+.order-dialog-container-div {
+  padding: 0.5rem;
+}
+
+.border-quantity {
+  border: 1px solid var(--vinaya-cyan);
+  border-radius: 10px;
+}

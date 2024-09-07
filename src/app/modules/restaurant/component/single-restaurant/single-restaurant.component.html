@@ -31,7 +31,8 @@
 
         <!-- ORDER BUTTON -->
         <div class="d-flex w-100 justify-content-center v-edit-mode-btn-bottom" style="height: 50px; z-index: 1;"
-          *ngIf="!restaurantHolder && totalOrderEuro != '0'" [ngClass]="{'fixed-bottom': cartBtn , 'd-none': !cartBtn}">
+          *ngIf="!restaurantHolder && totalOrderEuro != '0' && !dialogCheckOut"
+          [ngClass]="{'fixed-bottom': cartBtn , 'd-none': !cartBtn}">
           <button class="btn w-100 v-button-full-width v-primary-background v-letterspace-2px fs-6" (click)="checkOut()"
             style="border-radius: 0 !important;">Controlla ordine
             <i class="material-icons mb-1 ms-1">fastfood</i></button>

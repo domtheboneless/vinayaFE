@@ -24,6 +24,7 @@ import { MatAccordion } from '@angular/material/expansion';
 import { QrCodeDialogComponent } from '../qr-code-dialog/qr-code-dialog.component';
 import Utils from '../../../../core/utils/common-function';
 import { CartService } from 'src/app/services/cart/cart.service';
+import { CheckOrderDialogComponent } from 'src/app/modules/order/components/check-order-dialog/check-order-dialog.component';
 
 @Component({
   selector: 'app-single-restaurant',
@@ -54,6 +55,7 @@ export class SingleRestaurantComponent implements OnInit {
   tokenExpired = false;
 
   // order var
+  dialogCheckOut = false;
   cartBtn = true;
   totalOrderEuro = '0';
   private subscriptions: Subscription[] = [];
@@ -230,11 +232,11 @@ export class SingleRestaurantComponent implements OnInit {
           this.updateCategory(categoryId);
           this.categoryOpen = category.name;
         } else if (result && result.order) {
-          this.coreService.snackBar(
-            'Aggiunto al carrello',
-            'OK',
-            'v-snack-bar-bg-success'
-          );
+          // this.coreService.snackBar(
+          //   'Aggiunto al carrello',
+          //   'OK',
+          //   'v-snack-bar-bg-success'
+          // ); non mi piace
         }
       })
     );
@@ -444,7 +446,19 @@ export class SingleRestaurantComponent implements OnInit {
   }
 
   checkOut() {
-    console.log(this.cartService.cartItems);
+    this.dialogCheckOut = true;
+    const dialogConfig = this.createDialogConfig({
+      restaurantHolder: this.restaurantHolder,
+      order: this.cartService.cartItems,
+    });
+
+    let dialog = this.coreService.openDialog(
+      CheckOrderDialogComponent,
+      dialogConfig
+    );
+    dialog.afterClosed().subscribe((res) => {
+      this.dialogCheckOut = false;
+    });
   }
 
   ngOnDestroy() {

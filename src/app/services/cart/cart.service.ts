@@ -28,6 +28,7 @@ export class CartService {
     if (!exist) {
       console.log('aggiungo prodotto');
       this.cartItems.push(itemToAdd);
+      console.log(this.cartItems);
     }
     this.cartItems$.next(this.cartItems);
   }

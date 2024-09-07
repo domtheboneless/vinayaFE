@@ -13,6 +13,7 @@ import { QRCodeModule } from 'angularx-qrcode';
 import { QrCodeDialogComponent } from './component/qr-code-dialog/qr-code-dialog.component';
 import { RestaurantHeaderCoverLogoComponent } from './component/restaurant-header-cover-logo/restaurant-header-cover-logo.component';
 import { MoreVertBtnComponent } from './component/more-vert-btn/more-vert-btn.component';
+import { OrderModule } from '../order/order.module';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { MoreVertBtnComponent } from './component/more-vert-btn/more-vert-btn.co
     ReactiveFormsModule,
     FormsModule,
     QRCodeModule,
+    OrderModule,
   ],
 })
 export class RestaurantModule {}
